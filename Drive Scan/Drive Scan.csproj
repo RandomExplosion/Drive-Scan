@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="DriveFolders.png" />
     <None Remove="DriveList.png" />
+    <None Remove="DriveScan.xaml~RF8249557d.TMP" />
     <None Remove="Subfolders.png" />
   </ItemGroup>
 

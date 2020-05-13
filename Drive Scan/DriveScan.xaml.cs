@@ -13,17 +13,64 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Drive_Scan
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    /// 
+
+    
+    public partial class DriveScanWindow : MetroWindow
     {
-        public MainWindow()
+
+        //Singleton Pattern
+        static DriveScanWindow currentWindow;
+
+        //Runs on window open
+        public DriveScanWindow()
         {
             InitializeComponent();
+
+            //Populate Drive List
+            DriveList.ItemsSource = DriveInfo.GetDrives();
+        }
+
+        //public static class DriveListWindow
+        //{
+        //    public static void UpdateDriveList()
+        //    {
+
+        //    }
+        //}
+    }
+
+    /// <summary>
+    /// Converts Byte Values into their simplest unit
+    /// Source: https://thomasfreudenberg.com/archive/2017/01/21/presenting-byte-size-values-in-wpf/
+    /// </summary>
+    public class FormatKbSizeConverter : IValueConverter
+    {
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern long StrFormatByteSizeW(long qdw, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszBuf,
+            int cchBuf);
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var number = System.Convert.ToInt64(value);
+            var sb = new StringBuilder(32);
+            StrFormatByteSizeW(number, sb, sb.Capacity);
+            return sb.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
+
 }
