@@ -21,7 +21,9 @@ namespace Scanner
             queue.Enqueue(path);
             while (queue.Count > 0) 
             {
+                long totalSize = 0;
                 path = queue.Dequeue();
+
                 try
                 {
                     foreach (string subDir in Directory.GetDirectories(path)) 
@@ -29,18 +31,24 @@ namespace Scanner
                         queue.Enqueue(subDir);
                     }
                 } catch (Exception) {}
+
                 string[] files = null;
                 try 
                 {
                     files = Directory.GetFiles(path);
                 } catch (Exception) {}
+
                 if (files != null) 
                 {
                     foreach (string file in files)
                     {
-                        yield return new File(new FileInfo(file).Length, file, false);
+                        long size = new FileInfo(file).Length;
+                        totalSize += size;
+                        yield return new File(size, file, false);
                     }
                 }
+
+                yield return new File(totalSize, path, true);
             }
         }
     }
