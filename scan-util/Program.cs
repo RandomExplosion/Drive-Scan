@@ -7,7 +7,7 @@ namespace scan_util
     {
         static void Main(string[] args)
         {
-            DirectoryScanner.FindFiles(@"K:\Coding\GitHub\Drive-Scan\scan-util\test\", file => {
+            DirectoryScanner.FindFiles(@"K:\Coding\GitHub\", file => {
                 Console.WriteLine(file);
             });
         }
