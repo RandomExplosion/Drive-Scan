@@ -31,14 +31,23 @@
             <TreeView Grid.Row="0"/>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" Style="{ DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
             
-            <DataGrid Name="DriveList" Grid.Row="2" GridLinesVisibility="All" AutoGenerateColumns="False">
+            <DataGrid Name="DriveList" Grid.Row="2" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
+                <!--Converters-->
                 <DataGrid.Resources>
-                    <local:FormatKbSizeConverter x:Key="FormatKbSizeConverter" />
+                    <local:FormatSizeConverter x:Key="FormatSizeConverter" />
+                    <local:UsedDriveSpaceConverter x:Key="UsedDriveSpaceConverter" />
                 </DataGrid.Resources>
+                
+                <!--Double Click Event-->
+                <DataGrid.ItemContainerStyle>
+                    <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseDoubleClick" Handler="DriveList_Row_DoubleClick"/>
+                    </Style>
+                </DataGrid.ItemContainerStyle>
 
                 <DataGrid.Columns>
                     <!--Drive Volume Labels-->
-                    <DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=VolumeLabel}">
+                    <DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=Name}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -51,10 +60,10 @@
                     </DataGridTemplateColumn>
                     
                     
-                    <!--Real Names-->
-                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Size" Binding="{Binding Path=TotalSize, Converter={StaticResource FormatKbSizeConverter}}" SortMemberPath="{Binding Path=TotalSize}" Width="*"/>
+                    <!---->
+                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Size" Binding="{Binding Path=TotalSize, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalSize}" Width="*"/>
 
-                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Used" Binding="{Binding Path=UsedSpace, Converter={StaticResource FormatKbSizeConverter}}" SortMemberPath="{Binding Path=RealName}" Width="*"/>
+                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Used" Binding="{Binding ., Converter={StaticResource UsedDriveSpaceConverter}}" SortMemberPath="{Binding Path=RealName}" Width="*"/>
                     <!--<DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=VolumeLabel}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -67,7 +76,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>-->
                     
-                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatKbSizeConverter}}" SortMemberPath="{Binding Path=TotalFreeSpace}" Width="*"/>
+                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalFreeSpace}" Width="*"/>
                     
                 </DataGrid.Columns>
             </DataGrid>

@@ -40,20 +40,18 @@ namespace Drive_Scan
             DriveList.ItemsSource = DriveInfo.GetDrives();
         }
 
-        //public static class DriveListWindow
-        //{
-        //    public static void UpdateDriveList()
-        //    {
-
-        //    }
-        //}
+        public void DriveList_Row_DoubleClick(object Sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine("DoubleClicked on Row");
+        }
     }
 
+    #region XAML Display Converters
     /// <summary>
     /// Converts Byte Values into their simplest unit
     /// Source: https://thomasfreudenberg.com/archive/2017/01/21/presenting-byte-size-values-in-wpf/
     /// </summary>
-    public class FormatKbSizeConverter : IValueConverter
+    public class FormatSizeConverter : IValueConverter
     {
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern long StrFormatByteSizeW(long qdw, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszBuf,
@@ -61,8 +59,8 @@ namespace Drive_Scan
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var number = System.Convert.ToInt64(value);
-            var sb = new StringBuilder(32);
+            long number = System.Convert.ToInt64(value);
+            StringBuilder    sb = new StringBuilder(32);
             StrFormatByteSizeW(number, sb, sb.Capacity);
             return sb.ToString();
         }
@@ -71,6 +69,27 @@ namespace Drive_Scan
         {
             return DependencyProperty.UnsetValue;
         }
+
+        public static object Convert(object value)
+        {
+            return new FormatSizeConverter().Convert(value, null, null, CultureInfo.CurrentCulture);
+        }
+    } 
+
+    public class UsedDriveSpaceConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            DriveInfo driveInfo = value as DriveInfo;
+            long usedBytes = driveInfo.TotalSize - driveInfo.TotalFreeSpace;
+            return FormatSizeConverter.Convert(usedBytes);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
     }
+    #endregion
 
 }
