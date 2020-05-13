@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Blend for Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drive Scan", "Drive Scan.csproj", "{A1B88863-6758-497E-868F-0ECC6DFBAB22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B88863-6758-497E-868F-0ECC6DFBAB22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B88863-6758-497E-868F-0ECC6DFBAB22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B88863-6758-497E-868F-0ECC6DFBAB22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B88863-6758-497E-868F-0ECC6DFBAB22}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FDF3385F-BE9C-4994-837D-A2D2A96AE1C4}
+	EndGlobalSection
+EndGlobal
