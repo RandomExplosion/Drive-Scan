@@ -67,7 +67,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>-->
                     
-                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatKbSizeConverter}}" SortMemberPath="{Binding Path=AvailableFreeSpace}" Width="*"/>
+                    <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatKbSizeConverter}}" SortMemberPath="{Binding Path=TotalFreeSpace}" Width="*"/>
                     
                 </DataGrid.Columns>
             </DataGrid>
