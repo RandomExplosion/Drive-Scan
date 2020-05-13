@@ -11,6 +11,9 @@ namespace Scanner
         /// <summary> Recursively get the files in a folder and call the callback function with each file or folder </summary>
         /// <param name="path">The path of the folder to start in</param>
         /// <param name="callback">The callback function for each file/folder</param>
+        /// <example><code>
+        /// DirectoryScanner.FindFiles(@"K:\Coding\GitHub\", file => Console.WriteLine(file));
+        /// </code></example>
         public static void FindFiles(string path, Action<File> callback)   
         {
             foreach (File file in GetFiles(path)) {
