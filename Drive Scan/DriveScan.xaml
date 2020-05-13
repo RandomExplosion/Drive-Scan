@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Drive_Scan"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d" BorderThickness="0" Icon="Resources/icon.ico"
+        ShowTitleBar="False" WindowStartupLocation="CenterScreen"
+        Height="720" Width="1280">
+
     <Grid x:Name="RootGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="LeftPanel" Width="1*"/>
@@ -15,7 +17,7 @@
         </Grid.ColumnDefinitions>
         
         <!--Grid Splitter Between Left and Right Panels-->
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Width="5"/>
+        <GridSplitter Grid.Column="1" ShowsPreview="False" HorizontalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Width="5"/>
         
         <!--Grid for Left Panel-->
         <Grid Grid.Column="0" x:Name="LeftGrid">
@@ -24,6 +26,7 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
+            <TreeView Grid.Row="0"/>
             <!--Grid Splitter Between Top Left and Bottom Left-->
             <TreeView Grid.Row="0"/>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" Style="{ DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
@@ -80,7 +83,7 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <!--Grid Splitter Between Top Left and Bottom Left-->
-            <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
+            <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
         </Grid>
     </Grid>
