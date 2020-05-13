@@ -22,12 +22,18 @@ namespace Scanner
             while (queue.Count > 0) 
             {
                 path = queue.Dequeue();
-                foreach (string subDir in Directory.GetDirectories(path)) 
+                try
                 {
-                    queue.Enqueue(subDir);
-                }
+                    foreach (string subDir in Directory.GetDirectories(path)) 
+                    {
+                        queue.Enqueue(subDir);
+                    }
+                } catch (Exception) {}
                 string[] files = null;
-                files = Directory.GetFiles(path);
+                try 
+                {
+                    files = Directory.GetFiles(path);
+                } catch (Exception) {}
                 if (files != null) 
                 {
                     foreach (string file in files)
@@ -52,7 +58,7 @@ namespace Scanner
         }
 
         public override String ToString() {
-            return $"{this.path} is {this.size} kilobytes ({(this.isFolder ? "folder" : "file")})";
+            return $"{this.path} is {this.size} bytes ({(this.isFolder ? "folder" : "file")})";
         }
     }
 }
