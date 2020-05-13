@@ -9,4 +9,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="1.6.5" />
+  </ItemGroup>
+
 </Project>
