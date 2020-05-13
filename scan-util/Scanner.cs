@@ -16,7 +16,8 @@ namespace Scanner
         /// </code></example>
         public static void FindFiles(string path, Action<File> callback)   
         {
-            foreach (File file in GetFiles(path)) {
+            foreach (File file in GetFiles(path)) 
+            {
                 callback(file);
             }
         }   
