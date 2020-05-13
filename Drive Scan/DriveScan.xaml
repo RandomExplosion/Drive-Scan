@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
         
         <!--Grid Splitter Between Left and Right Panels-->
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Width="5"/>
+        <GridSplitter Grid.Column="1" ShowsPreview="False" HorizontalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Width="5"/>
         
         <!--Grid for Left Panel-->
         <Grid Grid.Column="0" x:Name="LeftGrid">
@@ -24,10 +24,9 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
+            <TreeView Grid.Row="0"/>
             <!--Grid Splitter Between Top Left and Bottom Left-->
-            <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
-            <TreeView/>
-
+            <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
         </Grid>
         
@@ -39,7 +38,7 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <!--Grid Splitter Between Top Left and Bottom Left-->
-            <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
+            <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
         </Grid>
     </Grid>

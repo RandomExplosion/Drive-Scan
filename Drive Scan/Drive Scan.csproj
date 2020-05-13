@@ -10,19 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="DriveFolders.png" />
-    <None Remove="DriveList.png" />
-    <None Remove="Subfolders.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0821" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="DriveFolders.png" />
-    <Resource Include="DriveList.png" />
-    <Resource Include="Subfolders.png" />
   </ItemGroup>
 
 </Project>
