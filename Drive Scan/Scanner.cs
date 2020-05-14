@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-// DriveInfo di = new DriveInfo(path);
-
 namespace Scanner
 {
     public static class DirectoryScanner
