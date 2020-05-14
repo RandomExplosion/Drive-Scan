@@ -4,8 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Drive_Scan"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        mc:Ignorable="d" WindowTitleBrush="#252525" NonActiveWindowTitleBrush="#252525"
+        mc:Ignorable="d" 
+        WindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}" 
+        NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
         BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/icon.ico"
         Height="Auto" Width="Auto">
 
@@ -23,24 +26,26 @@
     <!--Ribbon operation buttons-->
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
-            <StackPanel Name="title" Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal">
                 <!--Set title-->
-                <TextBlock Padding="0,0,20,0" Text="Drive Scan" VerticalAlignment="Center" Margin="8 5 8 0"></TextBlock>
+                <TextBlock Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}" 
+                    Padding="0,0,20,0" Text="Drive Scan" 
+                    VerticalAlignment="Center" Margin="8 5 8 0"></TextBlock>
             </StackPanel>
 
-            <StackPanel Name="menuHolder" Orientation="Horizontal">
-                <Menu Name="MainMenu" Margin="20,2,20,0">
-                    <MenuItem Name="File" Header="File">
-                        <MenuItem Name="Save" Header="Save"/>
-                        <MenuItem Name="Load" Header="Load"/>
+            <StackPanel Orientation="Horizontal">
+                <Menu Margin="20,2,20,0">
+                    <MenuItem Header="File">
+                        <MenuItem Header="Save"/>
+                        <MenuItem Header="Load"/>
                     </MenuItem>
-                    <MenuItem Name="Options" Header="Options">
-                        <MenuItem Name="Theme" Header="Theme">
+                    <MenuItem Header="Options">
+                        <MenuItem Header="Theme">
                             <MenuItem Header="Dark" Click="ThemeSwitch"/>
                             <MenuItem Header="Light" Click="ThemeSwitch"/>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Name="Advanced" Header="Advanced">
+                    <MenuItem Header="Advanced">
 
                     </MenuItem>
                 </Menu>
@@ -48,7 +53,7 @@
         </mah:WindowCommands>    
     </mah:MetroWindow.LeftWindowCommands>
 
-    <Border BorderThickness="0,5,0,0" BorderBrush="#454545">
+    <Border BorderThickness="0,5,0,0" BorderBrush="{DynamicResource MahApps.Brushes.Gray8}">
         <Grid x:Name="RootGrid">
 
             <Grid.ColumnDefinitions>

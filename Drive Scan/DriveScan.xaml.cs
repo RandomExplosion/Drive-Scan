@@ -16,6 +16,8 @@ using MahApps.Metro.Controls;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Globalization;
+using Config;
+using ControlzEx.Theming;
 
 namespace Drive_Scan
 {
@@ -38,7 +40,8 @@ namespace Drive_Scan
         public DriveScanWindow()
         {
             InitializeComponent();
-           // AllocConsole();
+            AllocConsole();
+            ThemeSwitch(ConfigHandler.readValue("theme"));
 
             //Populate Drive List
             DriveList.ItemsSource = DriveInfo.GetDrives();
@@ -50,9 +53,26 @@ namespace Drive_Scan
         }
 
         #region Ribbon Buttons
-        public void ThemeSwitch(object Sender, RoutedEventArgs e)
+
+        /// <summary> Switch current theme to specified theme and update config </summary>
+        public void ThemeSwitch(dynamic Sender, RoutedEventArgs e = null)
         {
-            Console.WriteLine("switching theme");
+            // Get the name of the object the operation originated from 
+            //                              (this will be the theme to switch to)
+            string theme = Sender.GetType() != typeof(string)
+                ? ((String)(Sender.GetType().GetProperty("Header")).GetValue(Sender, null)).ToLower()
+                : Sender;
+            
+            if (theme == "dark")
+            {
+                ConfigHandler.updateValue("theme", "dark");
+                ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Blue", false);
+            }
+            else if (theme == "light")
+            {
+                ConfigHandler.updateValue("theme", "light");
+                ThemeManager.Current.ChangeTheme(Application.Current, "Light.Taupe", false);
+            }
         }
         #endregion
     }
