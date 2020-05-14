@@ -23,6 +23,7 @@ namespace Config
                 using (StreamWriter sw = File.CreateText(path))
                 {
                     sw.WriteLine("theme=dark");
+                    sw.WriteLine("debug=1");
                 }
             }
 
@@ -58,7 +59,7 @@ namespace Config
             // For each key-value pair in the data, append the valid key=value to the string builder 
             foreach (string item in data.Keys)
             {
-                sb.Append($"{item}={data[item]}");
+                sb.Append($"{item}={data[item]}{Environment.NewLine}");
             }
             // Write the updated config to the file, overwriting what was originally there
             File.WriteAllText(path, sb.ToString());

@@ -40,8 +40,12 @@ namespace Drive_Scan
         public DriveScanWindow()
         {
             InitializeComponent();
-            AllocConsole();
             ThemeSwitch(ConfigHandler.readValue("theme"));
+            // Show window console if debug mode is enabled
+            if (Convert.ToBoolean(Convert.ToInt16(ConfigHandler.readValue("debug"))))
+            {
+                AllocConsole();
+            }
 
             //Populate Drive List
             DriveList.ItemsSource = DriveInfo.GetDrives();
