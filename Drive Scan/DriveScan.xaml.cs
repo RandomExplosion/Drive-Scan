@@ -10,14 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using System.Globalization;
 using Config;
 using ControlzEx.Theming;
+using System.Collections.ObjectModel;
+using Scanner;
 
 namespace Drive_Scan
 {
@@ -54,6 +56,7 @@ namespace Drive_Scan
         public void DriveList_Row_DoubleClick(object Sender, MouseButtonEventArgs e)
         {
             Console.WriteLine("DoubleClicked on Row");
+            MessageBox.Show("dOeS U wANtZ tU sCaN tHis dRiVE?");
         }
 
         #region Ribbon Buttons
@@ -127,4 +130,30 @@ namespace Drive_Scan
     }
     #endregion
 
+    #region XAML Data Containers
+    /// <summary>
+    /// Stores useful info on folders
+    /// </summary>
+    public class FolderInfo : object
+    {
+        public FolderInfo(long _size, string _path)
+        {
+            this.subfolders = new ObservableCollection<FolderInfo>();
+        }
+
+        public string path;
+        public long size;
+
+        ObservableCollection<FolderInfo> subfolders;
+        ObservableCollection<FileInfo> files;
+    }
+
+    public class FileInfo : object
+    {
+        public string path;
+        public long size;
+    }
+
+
+    #endregion
 }

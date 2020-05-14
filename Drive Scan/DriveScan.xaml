@@ -72,11 +72,26 @@
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TreeView Grid.Row="0"/>
+                
+                <!--Scanned drive folder heirarchy-->
+                <TreeView Name="DirectoryTree" Grid.Row="0">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text=" [" Foreground="Blue" />
+                                <TextBlock Text="{Binding Members.Count}" Foreground="Blue" />
+                                <TextBlock Text="]" Foreground="Blue" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources> 
+                </TreeView>
+                
                 <!--Grid Splitter Between Top Left and Bottom Left-->
-                <TreeView Grid.Row="0"/>
                 <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{ DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
                 
+                <!--Drive List-->
                 <DataGrid Name="DriveList" Grid.Row="2" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
                     <!--Converters-->
                     <DataGrid.Resources>

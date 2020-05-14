@@ -75,7 +75,6 @@ namespace Scanner
         }
     }
 
-
     public struct File
     {
         public long size;      
