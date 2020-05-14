@@ -6,8 +6,47 @@
         xmlns:local="clr-namespace:Drive_Scan"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d" WindowTitleBrush="#252525" NonActiveWindowTitleBrush="#252525"
-        BorderThickness="0" WindowStartupLocation="CenterScreen"
+        BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/icon.ico"
         Height="Auto" Width="Auto">
+
+    <!--Properly size window icon-->
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                    Margin="4" Background="Transparent" RenderOptions.EdgeMode="Aliased"
+                    RenderOptions.BitmapScalingMode="HighQuality">
+                <Image Source="Resources/icon.ico"></Image>
+            </Grid>
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
+
+    <!--Ribbon operation buttons-->
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <StackPanel Name="title" Orientation="Horizontal">
+                <!--Set title-->
+                <TextBlock Padding="0,0,20,0" Text="Drive Scan" VerticalAlignment="Center" Margin="8 5 8 0"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Name="menuHolder" Orientation="Horizontal">
+                <Menu Name="MainMenu" Margin="20,2,20,0">
+                    <MenuItem Name="File" Header="File">
+                        <MenuItem Name="Save" Header="Save"/>
+                        <MenuItem Name="Load" Header="Load"/>
+                    </MenuItem>
+                    <MenuItem Name="Options" Header="Options">
+                        <MenuItem Name="Theme" Header="Theme">
+                            <MenuItem Header="Dark" Click="ThemeSwitch"/>
+                            <MenuItem Header="Light" Click="ThemeSwitch"/>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Name="Advanced" Header="Advanced">
+
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+        </mah:WindowCommands>    
+    </mah:MetroWindow.LeftWindowCommands>
 
     <Border BorderThickness="0,5,0,0" BorderBrush="#454545">
         <Grid x:Name="RootGrid">

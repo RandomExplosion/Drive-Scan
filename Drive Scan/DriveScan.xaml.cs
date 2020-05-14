@@ -23,18 +23,22 @@ namespace Drive_Scan
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-
-    
     public partial class DriveScanWindow : MetroWindow
     {
 
         //Singleton Pattern
         static DriveScanWindow currentWindow;
 
+        // To create a console so we can see debug information
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
         //Runs on window open
         public DriveScanWindow()
         {
             InitializeComponent();
+           // AllocConsole();
 
             //Populate Drive List
             DriveList.ItemsSource = DriveInfo.GetDrives();
@@ -44,6 +48,13 @@ namespace Drive_Scan
         {
             Console.WriteLine("DoubleClicked on Row");
         }
+
+        #region Ribbon Buttons
+        public void ThemeSwitch(object Sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("switching theme");
+        }
+        #endregion
     }
 
     #region XAML Display Converters
