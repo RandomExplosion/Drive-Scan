@@ -12,7 +12,12 @@
         BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/icon.ico"
         Height="Auto" Width="Auto">
 
-    <!--Properly size window icon-->
+    <!--Window Resources: Converters, Icons etc-->
+    <mah:MetroWindow.Resources>
+        <local:FormatSizeConverter x:Key="FormatSizeConverter" />
+    </mah:MetroWindow.Resources>
+
+        <!--Properly size window icon-->
     <mah:MetroWindow.IconTemplate>
         <DataTemplate>
             <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
@@ -76,7 +81,8 @@
                 <!--Scanned drive folder heirarchy-->
                 <TreeView Name="DirectoryTree" Grid.Row="0">
                     <TreeView.Resources>
-                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
+                        <!--Folder Template-->
+                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding }">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />
                                 <TextBlock Text="{Binding Name}" />
@@ -85,7 +91,19 @@
                                 <TextBlock Text="]" Foreground="Blue" />
                             </StackPanel>
                         </HierarchicalDataTemplate>
+
+                        <!--File Template-->
+                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--<Image Source="" Margin="0,0,5,0" />-->
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text=" [" Foreground="Blue" />
+                                <TextBlock Text="{Binding Members.Count}" Foreground="Blue" />
+                                <TextBlock Text="]" Foreground="Blue" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
                     </TreeView.Resources> 
+                    
                 </TreeView>
                 
                 <!--Grid Splitter Between Top Left and Bottom Left-->
@@ -95,7 +113,6 @@
                 <DataGrid Name="DriveList" Grid.Row="2" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
                     <!--Converters-->
                     <DataGrid.Resources>
-                        <local:FormatSizeConverter x:Key="FormatSizeConverter" />
                         <local:UsedDriveSpaceConverter x:Key="UsedDriveSpaceConverter" />
                     </DataGrid.Resources>
                     
