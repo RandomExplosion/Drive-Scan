@@ -46,7 +46,7 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Advanced">
-
+                        <MenuItem Header="Administrator Mode" Click="GetAdmin"/>
                     </MenuItem>
                 </Menu>
             </StackPanel>

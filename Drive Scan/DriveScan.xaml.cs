@@ -20,6 +20,8 @@ using Config;
 using ControlzEx.Theming;
 using System.Collections.ObjectModel;
 using Scanner;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Drive_Scan
 {
@@ -80,6 +82,31 @@ namespace Drive_Scan
                 ConfigHandler.updateValue("theme", "light");
                 ThemeManager.Current.ChangeTheme(Application.Current, "Light.Taupe", false);
             }
+        }
+
+        /// <summary> Reboot as administrator </summary>
+        public void GetAdmin(object Sender, RoutedEventArgs e)
+        {
+            // Get application exe location
+            string path = Process.GetCurrentProcess().MainModule.FileName;
+
+            // Setup process info to have admin
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true,
+                Verb = "runas"
+            };
+
+            try
+            {
+                // Start new instance
+                Process.Start(psi);
+                // Close original instance
+                this.Close();
+            }
+            // Catch user cancelling UAC prompt
+            catch (System.ComponentModel.Win32Exception) {}
         }
         #endregion
     }
