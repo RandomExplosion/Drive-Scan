@@ -161,7 +161,7 @@ namespace Drive_Scan
     /// <summary>
     /// Stores useful info on folders
     /// </summary>
-    public class FolderInfo : object
+    public class FolderInfo
     {
         public FolderInfo(long _size, string _path)
         {
@@ -175,7 +175,7 @@ namespace Drive_Scan
         ObservableCollection<FileInfo> files;
     }
 
-    public class FileInfo : object
+    public class FileInfo
     {
         public string path;
         public long size;

@@ -96,10 +96,8 @@
                         <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
                             <StackPanel Orientation="Horizontal">
                                 <!--<Image Source="" Margin="0,0,5,0" />-->
-                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding name}" />
                                 <TextBlock Text=" [" Foreground="Blue" />
-                                <TextBlock Text="{Binding Members.Count}" Foreground="Blue" />
-                                <TextBlock Text="]" Foreground="Blue" />
                             </StackPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources> 
