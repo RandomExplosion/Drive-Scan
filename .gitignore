@@ -350,8 +350,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-.vscode/launch.json
-.vscode/tasks.json
-Drive-Scan-Workspace.code-workspace
-Drive-Scan-Workspace.code-workspace
-Drive-Scan-Workspace.code-workspace
+
+# Visual Studio Code Files
+.vscode/
+*.code-workspace
