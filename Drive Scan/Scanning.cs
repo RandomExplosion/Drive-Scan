@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Drive_Scan
 {
@@ -18,12 +18,17 @@ namespace Drive_Scan
             /// <param name="path">The path of the folder to start in</param>
             /// <param name="callback">The callback function for each file/folder</param>
             /// <example><code>
-            /// DirectoryScanner.FindFiles(@"K:\Coding\GitHub\", file => Console.WriteLine(file));
+            /// DirectoryScanner.FindFiles(@"C:\Program Files\", file => Console.WriteLine(file));
             /// </code></example>
-            public static void FindFiles(string path, Action<File> callback)   
+            public static async void FindFiles(string path, Action<File> callback)   
             {
+                if (_scanInProgress)
+                {
+                    throw new System.InvalidOperationException("Another process is already running a scan!");
+                }
+
                 _scanInProgress = true;
-                foreach (File file in GetFiles(path)) 
+                await foreach (File file in GetFiles(path)) 
                 {
                     callback(file);
                 }
@@ -32,7 +37,7 @@ namespace Drive_Scan
 
             /// <summary> Returns an IEnumerable of a File object for each file in a specified directory (is recursive) </summary>
             /// <param name="path">The path of the folder to start in</param>
-            private static IEnumerable<File> GetFiles(string path)
+            private static async IAsyncEnumerable<File> GetFiles(string path)
             {
                 // Create directory queue
                 Queue<string> queue = new Queue<string>();
