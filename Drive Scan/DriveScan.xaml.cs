@@ -1,69 +1,94 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Globalization;
-using Config;
 using ControlzEx.Theming;
-using System.Collections.ObjectModel;
-using Scanner;
-using System.Reflection;
 using System.Diagnostics;
+using Drive_Scan.Config;
 
 namespace Drive_Scan
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Code Behind DriveScan.xaml
     /// </summary>
-    /// 
     public partial class DriveScanWindow : MetroWindow
     {
 
         //Singleton Pattern
         static DriveScanWindow currentWindow;
 
-        // To create a console so we can see debug information
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool AllocConsole();
-
         //Runs on window open
         public DriveScanWindow()
         {
             InitializeComponent();
             ThemeSwitch(ConfigHandler.readValue("theme"));
-            // Show window console if debug mode is enabled
-            if (Convert.ToBoolean(Convert.ToInt16(ConfigHandler.readValue("debug"))))
-            {
-                AllocConsole();
-            }
 
             //Populate Drive List
             DriveList.ItemsSource = DriveInfo.GetDrives();
         }
 
-        public void DriveList_Row_DoubleClick(object Sender, MouseButtonEventArgs e)
+#region Scan File Command
+        /// <summary>
+        /// Start scanning the selected drive
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="e"></param>
+        private void ScanDrive_CommandBinding_Executed(object target, ExecutedRoutedEventArgs e)
         {
-            Console.WriteLine("DoubleClicked on Row");
-            MessageBox.Show("dOeS U wANtZ tU sCaN tHis dRiVE?");
+            //DriveInfo info = e.Parameter as DriveInfo;
+            DriveInfo info = DriveList.SelectedItem as DriveInfo;
+            ScanDrive(info.Name);
+        }
+
+        /// <summary>
+        /// Checks if the conditions are right to start a drive scan (has the user selected a drive)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ScanDrive_CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (DriveList != null)
+            {
+                if (DriveList.SelectedItem != null)
+                {
+                    e.CanExecute = true;
+                }
+            }
+        }
+#endregion
+
+        /// <summary>
+        /// Scans a drive with the given name (Obtainable from SystemIO.DriveInfo)
+        /// </summary>
+        /// <param name="DriveName"></param>
+        public void ScanDrive(string DriveName)
+        {
+            MessageBoxResult answer = MessageBox.Show("dOeS U wANtZ tU sCaN tHis dRiVE?", "DoeS U wANtZ tU sCaN tHis dRiVE?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (answer == MessageBoxResult.Yes)
+            {
+                DriveInfo drive = DriveList.SelectedItem as DriveInfo;
+                Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
+                Scanning.DirectoryScanner.FindFiles(drive.Name, OnFileFound);
+            }
+        }
+
+        /// <summary>
+        /// Callback for ScanDrive()
+        /// </summary>
+        /// <param name="foundFile"></param>
+        public void OnFileFound(Scanning.File foundFile)
+        {
+            Console.WriteLine(foundFile);
         }
 
         #region Ribbon Buttons
 
-        /// <summary> Switch current theme to specified theme and update config </summary>
+        /// <summary>
+        /// Switch current theme to specified theme and update config
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
         public void ThemeSwitch(dynamic Sender, RoutedEventArgs e = null)
         {
             // Get the name of the object the operation originated from 
@@ -84,7 +109,11 @@ namespace Drive_Scan
             }
         }
 
-        /// <summary> Reboot as administrator </summary>
+        /// <summary>
+        /// Reboot as administrator
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
         public void GetAdmin(object Sender, RoutedEventArgs e)
         {
             // Get application exe location
@@ -111,76 +140,4 @@ namespace Drive_Scan
         #endregion
     }
 
-    #region XAML Display Converters
-    /// <summary>
-    /// Converts Byte Values into their simplest unit
-    /// Source: https://thomasfreudenberg.com/archive/2017/01/21/presenting-byte-size-values-in-wpf/
-    /// </summary>
-    public class FormatSizeConverter : IValueConverter
-    {
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        private static extern long StrFormatByteSizeW(long qdw, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszBuf,
-            int cchBuf);
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            long number = System.Convert.ToInt64(value);
-            StringBuilder    sb = new StringBuilder(32);
-            StrFormatByteSizeW(number, sb, sb.Capacity);
-            return sb.ToString();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return DependencyProperty.UnsetValue;
-        }
-
-        public static object Convert(object value)
-        {
-            return new FormatSizeConverter().Convert(value, null, null, CultureInfo.CurrentCulture);
-        }
-    } 
-
-    public class UsedDriveSpaceConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            DriveInfo driveInfo = value as DriveInfo;
-            long usedBytes = driveInfo.TotalSize - driveInfo.TotalFreeSpace;
-            return FormatSizeConverter.Convert(usedBytes);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return DependencyProperty.UnsetValue;
-        }
-    }
-    #endregion
-
-    #region XAML Data Containers
-    /// <summary>
-    /// Stores useful info on folders
-    /// </summary>
-    public class FolderInfo
-    {
-        public FolderInfo(long _size, string _path)
-        {
-            this.subfolders = new ObservableCollection<FolderInfo>();
-        }
-
-        public string path;
-        public long size;
-
-        ObservableCollection<FolderInfo> subfolders;
-        ObservableCollection<FileInfo> files;
-    }
-
-    public class FileInfo
-    {
-        public string path;
-        public long size;
-    }
-
-
-    #endregion
 }

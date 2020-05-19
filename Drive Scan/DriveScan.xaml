@@ -12,12 +12,22 @@
         BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/icon.ico"
         Height="Auto" Width="Auto">
 
-    <!--Window Resources: Converters, Icons etc-->
+    <!-- Window Resources: Converters, Icons etc -->
     <mah:MetroWindow.Resources>
-        <local:FormatSizeConverter x:Key="FormatSizeConverter" />
+        <!-- ValueConverter to convert file sizes from bytes to the appropriate units -->
+        <local:FormatSizeConverter x:Key="FormatSizeConverter"/>
     </mah:MetroWindow.Resources>
 
-        <!--Properly size window icon-->
+    <!-- Command Bindings -->
+    <mah:MetroWindow.CommandBindings>
+        <!-- Open Command -->
+        <CommandBinding
+            Command="ApplicationCommands.Open"
+            Executed="ScanDrive_CommandBinding_Executed"
+            CanExecute="ScanDrive_CommandBinding_CanExecute"/>
+    </mah:MetroWindow.CommandBindings>
+
+    <!-- Properly size window icon -->
     <mah:MetroWindow.IconTemplate>
         <DataTemplate>
             <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
@@ -28,11 +38,11 @@
         </DataTemplate>
     </mah:MetroWindow.IconTemplate>
 
-    <!--Ribbon operation buttons-->
+    <!-- Ribbon operation buttons -->
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
             <StackPanel Orientation="Horizontal">
-                <!--Set title-->
+                <!-- Set title -->
                 <TextBlock Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}" 
                     Padding="0,0,20,0" Text="Drive Scan" 
                     VerticalAlignment="Center" Margin="8 5 8 0"></TextBlock>
@@ -67,10 +77,10 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             
-            <!--Grid Splitter Between Left and Right Panels-->
+            <!-- Grid Splitter Between Left and Right Panels -->
             <GridSplitter Grid.Column="1" ShowsPreview="False" HorizontalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Width="5"/>
             
-            <!--Grid for Left Panel-->
+            <!-- Grid for Left Panel -->
             <Grid Grid.Column="0" x:Name="LeftGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="3*"/>
@@ -78,10 +88,10 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 
-                <!--Scanned drive folder heirarchy-->
+                <!-- Scanned drive folder heirarchy -->
                 <TreeView Name="DirectoryTree" Grid.Row="0">
                     <TreeView.Resources>
-                        <!--Folder Template-->
+                        <!-- Folder Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding }">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />
@@ -92,10 +102,10 @@
                             </StackPanel>
                         </HierarchicalDataTemplate>
 
-                        <!--File Template-->
+                        <!-- File Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
                             <StackPanel Orientation="Horizontal">
-                                <!--<Image Source="" Margin="0,0,5,0" />-->
+                                <!-- <Image Source="" Margin="0,0,5,0" /> -->
                                 <TextBlock Text="{Binding name}" />
                                 <TextBlock Text=" [" Foreground="Blue" />
                             </StackPanel>
@@ -104,70 +114,77 @@
                     
                 </TreeView>
                 
-                <!--Grid Splitter Between Top Left and Bottom Left-->
+                <!-- Grid Splitter Between Top Left and Bottom Left -->
                 <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{ DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
                 
-                <!--Drive List-->
-                <DataGrid Name="DriveList" Grid.Row="2" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
-                    <!--Converters-->
-                    <DataGrid.Resources>
-                        <local:UsedDriveSpaceConverter x:Key="UsedDriveSpaceConverter" />
-                    </DataGrid.Resources>
-                    
-                    <!--Double Click Event-->
-                    <DataGrid.ItemContainerStyle>
-                        <Style TargetType="DataGridRow">
-                            <EventSetter Event="MouseDoubleClick" Handler="DriveList_Row_DoubleClick"/>
-                        </Style>
-                    </DataGrid.ItemContainerStyle>
+                <StackPanel Orientation="Vertical" Grid.Row="2">
+                    <!-- Scan Button -->
+                    <Button Width="50" Height="25" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open"> Scan Drive </Button>
 
-                    <DataGrid.Columns>
-                        <!--Drive Volume Labels-->
-                        <DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=Name}">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <!--<Image/>-->
-                                        <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=VolumeLabel}"/>
-                                        <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=Name, StringFormat=' ({0})'}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        
-                        
-                        <!---->
-                        <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Size" Binding="{Binding Path=TotalSize, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalSize}" Width="*"/>
+                    <!-- Drive List -->
+                    <DataGrid Name="DriveList" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
+                        <!-- Converters -->
+                        <DataGrid.Resources>
+                            <!-- Used Drive Space Arithmetic -->
+                            <local:UsedDriveSpaceConverter x:Key="UsedDriveSpaceConverter" />
+                        </DataGrid.Resources>
 
-                        <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Used" Binding="{Binding ., Converter={StaticResource UsedDriveSpaceConverter}}" SortMemberPath="{Binding Path=RealName}" Width="*"/>
-                        <!--<DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=VolumeLabel}">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        --><!--<Image/>--><!--
-                                        <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=VolumeLabel}"/>
-                                        <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=Name, StringFormat=' ({0})'}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>-->
-                        
-                        <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalFreeSpace}" Width="*"/>
-                        
-                    </DataGrid.Columns>
-                </DataGrid>
+                        <DataGrid.Columns>
+                            <!-- Drive Volume Labels -->
+                            <DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=Name}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <!-- <Image/> -->
+                                            <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=VolumeLabel}"/>
+                                            <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=Name, StringFormat=' ({0})'}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            
+                            <!-- Size -->
+                            <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Size" Binding="{Binding Path=TotalSize, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalSize}" Width="*"/>
 
+                            <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Used" Binding="{Binding ., Converter={StaticResource UsedDriveSpaceConverter}}" SortMemberPath="{Binding Path=RealName}" Width="*"/>
+                            <!-- <DataGridTemplateColumn Header="Drive" SortMemberPath="{Binding Path=VolumeLabel}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            --><!-- <Image/> --><!-- 
+                                            <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=VolumeLabel}"/>
+                                            <TextBlock Style="{DynamicResource MahApps.Styles.TextBlock}" Text="{Binding Path=Name, StringFormat=' ({0})'}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn> -->
+                            
+                            <DataGridTextColumn ElementStyle="{DynamicResource TextBlock}" Header="Free" Binding="{Binding Path=TotalFreeSpace, Converter={StaticResource FormatSizeConverter}}" SortMemberPath="{Binding Path=TotalFreeSpace}" Width="*"/>
+                            
+                            <!-- Scan Button -->
+                            <!-- <DataGridTemplateColumn Header="" SortMemberPath="{Binding Path=Name}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Width="50" Height="25" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open">Scan</Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn> -->
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
 
             </Grid>
             
-            <!--Grid for Right Panel-->
+            <!-- Grid for Right Panel -->
             <Grid Grid.Column="2" x:Name="RightGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <!--Grid Splitter Between Top Left and Bottom Left-->
+                <!-- Grid Splitter Between Top Left and Bottom Left -->
                 <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
             </Grid>
