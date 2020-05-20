@@ -6,8 +6,9 @@ namespace Drive_Scan
 {
     namespace Scanning
     {
-        public static class DirectoryScanner
+        public class DirectoryScanner 
         {
+
             //ScaninProgress
             private static bool _scanInProgress;
 
@@ -16,11 +17,13 @@ namespace Drive_Scan
 
             /// <summary> Recursively get the files in a folder and call the callback function with each file or folder </summary>
             /// <param name="path">The path of the folder to start in</param>
-            /// <param name="callback">The callback function for each file/folder</param>
+            /// <param name="callback">The callback function for each file/folder, returns the file object with isFirstFile and isRoot</param>
+            /// <param name="filterDirectory">Filter options for directories</param>
+            /// <param name="filterFile">Filter options for files</param>
             /// <example><code>
             /// DirectoryScanner.FindFiles(@"C:\Program Files\", file => Console.WriteLine(file));
             /// </code></example>
-            public static async void FindFiles(string path, Action<File> callback)   
+            public static async void FindFiles(string path, Action<File, bool, bool> callback, string filterFile = "?.*", string filterDirectory = "*")   
             {
                 if (_scanInProgress)
                 {
@@ -28,17 +31,20 @@ namespace Drive_Scan
                 }
 
                 _scanInProgress = true;
-                await foreach (File file in GetFiles(path)) 
+                await foreach (File file in GetFiles(path, filterFile, filterDirectory)) 
                 {
-                    callback(file);
+                    callback(file, file.isFirstFile, file.isRoot);
                 }
                 _scanInProgress = false;
             }   
 
             /// <summary> Returns an IEnumerable of a File object for each file in a specified directory (is recursive) </summary>
             /// <param name="path">The path of the folder to start in</param>
-            private static async IAsyncEnumerable<File> GetFiles(string path)
+            private static async IAsyncEnumerable<File> GetFiles(string path, string filterFile, string filterDirectory)
             {
+                // If it is the first file found
+                bool firstFile = true;
+
                 // Create directory queue
                 Queue<string> queue = new Queue<string>();
                 // Add starting folder to queue
@@ -57,35 +63,34 @@ namespace Drive_Scan
                     try
                     {
                         // For every subfolder, add path to queue
-                        foreach (string subDir in Directory.GetDirectories(path)) 
+                        foreach (string subDir in Directory.EnumerateDirectories(path, filterDirectory)) 
                         {
                             queue.Enqueue(subDir);
                         }
                     } catch (Exception) {}
 
-                    // Get all files in folder (this will not get directories)
-                    string[] files = null;
-                    try 
-                    {
-                        files = Directory.GetFiles(path);
-                    } catch (Exception) {}
+                    // Check if path is a root folder (C:\)
+                    bool isRoot = path.Length == 3 && path.EndsWith(@":\");
+                    bool isFirstFile = firstFile;
+                    if (firstFile) firstFile = false;
 
-                    // If any files were found
-                    if (files != null) 
+                    // Get all files in folder (this will not get directories)
+                    foreach (string file in Directory.EnumerateFiles(path, filterFile))
                     {
-                        foreach (string file in files)
-                        {
-                            // Check file size and yield 
-                            long size = new System.IO.FileInfo(file).Length;
-                            // Add file size to total directory size
-                            totalSize += size;
-                            // Yield file object
-                            yield return new File(size, file, false);
-                        }
+                        // Check file size and yield 
+                        long size = new System.IO.FileInfo(file).Length;
+                        // Add file size to total directory size
+                        totalSize += size;
+                        // Yield file object
+                        yield return new File(size, file, false, isRoot, isFirstFile);
                     }
 
-                    // After all files, yield directory with total directory size
-                    yield return new File(totalSize, path, true);
+                    // If not default filter or greater than one, will prevent empty folders from returning when a file filter is set
+                    if (filterFile == "?.*" || totalSize > 0)
+                    {
+                        // After all files, yield directory with total directory size
+                        yield return new File(totalSize, path, true, isRoot, isFirstFile);
+                    }
                 }
             }
         }
@@ -95,19 +100,26 @@ namespace Drive_Scan
             public long size;      
             public string path;
             public bool isFolder;
+            public bool isFirstFile;
+            public bool isRoot;
 
             /// <param name="s">The size of the file/folder</param>
             /// <param name="p">The path of the file/folder</param>
             /// <param name="f">Whether or not it is a folder</param>
-            public File(long s, string p, bool f)
+            /// <param name="ff">If it is a root folder</param>
+            /// <param name="r">Whether or not this is the first file</param>
+            public File(long s, string p, bool f, bool r = false, bool ff = false)
             {
                 size = s;
                 path = p;
                 isFolder = f;
+                isRoot = r;
+                isFirstFile = ff;
             }
 
-            public override String ToString() {
-                return $"\"{this.path}\" is {this.size} bytes ({(this.isFolder ? "folder" : "file")})";
+            public override String ToString() 
+            {
+                return $"\"{this.path}\" is {this.size} bytes ({(this.isFolder ? "folder" : "file")}, {(this.isFirstFile ? "first file" : "not first file")}, {(this.isRoot ? "root" : "not root")})";
             }
         }
     }
