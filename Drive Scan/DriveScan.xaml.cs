@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
@@ -6,6 +8,7 @@ using System.IO;
 using ControlzEx.Theming;
 using System.Diagnostics;
 using Drive_Scan.Config;
+using System.Collections.Generic;
 
 namespace Drive_Scan
 {
@@ -16,7 +19,10 @@ namespace Drive_Scan
     {
 
         //Singleton Pattern
-        static DriveScanWindow currentWindow;
+        //static DriveScanWindow currentWindow;
+
+        //Viewmodel for scanned folders and paths
+        public ObservableCollection<FolderInfo> scannedDrives;
 
         //Runs on window open
         public DriveScanWindow()
@@ -26,6 +32,13 @@ namespace Drive_Scan
 
             //Populate Drive List
             DriveList.ItemsSource = DriveInfo.GetDrives();
+
+            //Init scanned Drives list
+            scannedDrives = new ObservableCollection<FolderInfo>();
+            scannedDrives.Add(new FolderInfo(0, "Scanned Drives"));
+
+            //Populate Dir Tree
+            DirectoryTree.ItemsSource = scannedDrives;
         }
 
 #region Scan File Command
@@ -77,9 +90,27 @@ namespace Drive_Scan
         /// Callback for ScanDrive()
         /// </summary>
         /// <param name="foundFile"></param>
-        public void OnFileFound(Scanning.File foundFile)
+        /// <param name="isFirstFile"></param>
+        /// <param name="isRoot"></param>
+        public void OnFileFound(Scanning.File foundFile, bool isFirstFile, bool isRoot)
         {
-            Console.WriteLine(foundFile);
+            //Console.WriteLine(foundFile);
+
+            //If this is the root folder
+            if (isRoot && isFirstFile)
+            {
+                scannedDrives[0].UpdateFolder(foundFile.size, 
+                    //This part is also jank. it finds the last string in an array of strings that isn't null 
+                    foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
+            }
+            else if (!foundFile.isFolder)
+            {
+                scannedDrives[0].AddFileAtPath(foundFile.size, foundFile.path);
+            }
+            else 
+            {
+                scannedDrives[0].UpdateFolder(foundFile.size, foundFile.path);
+            }
         }
 
         #region Ribbon Buttons
@@ -91,12 +122,12 @@ namespace Drive_Scan
         /// <param name="e"></param>
         public void ThemeSwitch(dynamic Sender, RoutedEventArgs e = null)
         {
-            // Get the name of the object the operation originated from 
-            //                              (this will be the theme to switch to)
+            //Get the name of the object the operation originated from
+            //                             (this will be the theme to switch to)
             string theme = Sender.GetType() != typeof(string)
                 ? ((String)(Sender.GetType().GetProperty("Header")).GetValue(Sender, null)).ToLower()
                 : Sender;
-            
+
             if (theme == "dark")
             {
                 ConfigHandler.updateValue("theme", "dark");
@@ -116,10 +147,10 @@ namespace Drive_Scan
         /// <param name="e"></param>
         public void GetAdmin(object Sender, RoutedEventArgs e)
         {
-            // Get application exe location
+            //Get application exe location
             string path = Process.GetCurrentProcess().MainModule.FileName;
 
-            // Setup process info to have admin
+            //Setup process info to have admin
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = path,
@@ -129,12 +160,12 @@ namespace Drive_Scan
 
             try
             {
-                // Start new instance
+                //Start new instance
                 Process.Start(psi);
-                // Close original instance
+                //Close original instance
                 this.Close();
             }
-            // Catch user cancelling UAC prompt
+            //Catch user cancelling UAC prompt
             catch (System.ComponentModel.Win32Exception) {}
         }
         #endregion

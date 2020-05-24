@@ -42,6 +42,8 @@ namespace Drive_Scan
             /// <param name="path">The path of the folder to start in</param>
             private static async IAsyncEnumerable<File> GetFiles(string path, string filterFile, string filterDirectory)
             {
+                yield return new File(0, path, true, true, true);
+
                 // If it is the first file found
                 bool firstFile = true;
 
@@ -69,8 +71,6 @@ namespace Drive_Scan
                         }
                     } catch (Exception) {}
 
-                    // Check if path is a root folder (C:\)
-                    bool isRoot = path.Length == 3 && path.EndsWith(@":\");
                     bool isFirstFile = firstFile;
                     if (firstFile) firstFile = false;
 
@@ -82,14 +82,14 @@ namespace Drive_Scan
                         // Add file size to total directory size
                         totalSize += size;
                         // Yield file object
-                        yield return new File(size, file, false, isRoot, isFirstFile);
+                        yield return new File(size, file, false, false, isFirstFile);
                     }
 
                     // If not default filter or greater than one, will prevent empty folders from returning when a file filter is set
                     if (filterFile == "?.*" || totalSize > 0)
                     {
                         // After all files, yield directory with total directory size
-                        yield return new File(totalSize, path, true, isRoot, isFirstFile);
+                        yield return new File(totalSize, path, true, path.Length == 3 && path.EndsWith(@":\"), isFirstFile);
                     }
                 }
             }
@@ -106,8 +106,8 @@ namespace Drive_Scan
             /// <param name="s">The size of the file/folder</param>
             /// <param name="p">The path of the file/folder</param>
             /// <param name="f">Whether or not it is a folder</param>
-            /// <param name="ff">If it is a root folder</param>
             /// <param name="r">Whether or not this is the first file</param>
+            /// <param name="ff">If it is a root folder</param>
             public File(long s, string p, bool f, bool r = false, bool ff = false)
             {
                 size = s;

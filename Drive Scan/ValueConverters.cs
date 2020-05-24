@@ -46,7 +46,7 @@ namespace Drive_Scan
             StrFormatByteSizeW(number, sb, sb.Capacity);
             return sb.ToString();
         }
-
+        
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;

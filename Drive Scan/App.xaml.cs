@@ -27,10 +27,9 @@ namespace Drive_Scan
                 AllocConsole();
             }
 
-            
 			// Create the startup window
 			DriveScanWindow wnd = new DriveScanWindow();
-
+            
 			// Show the window
 			wnd.Show();
 		}

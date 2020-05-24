@@ -89,25 +89,24 @@
                 </Grid.RowDefinitions>
                 
                 <!-- Scanned drive folder heirarchy -->
-                <TreeView Name="DirectoryTree" Grid.Row="0">
+                <TreeView Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}">
                     <TreeView.Resources>
                         <!-- Folder Template -->
-                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding }">
+                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=subfolders}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />
-                                <TextBlock Text="{Binding Name}" />
-                                <TextBlock Text=" [" Foreground="Blue" />
-                                <TextBlock Text="{Binding Members.Count}" Foreground="Blue" />
-                                <TextBlock Text="]" Foreground="Blue" />
+                                <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
+                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
+                                <!-- <TextBlock Text=" [" Foreground="Blue" /> -->
                             </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <!-- File Template -->
-                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Members}">
+                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Path=files}">
                             <StackPanel Orientation="Horizontal">
                                 <!-- <Image Source="" Margin="0,0,5,0" /> -->
-                                <TextBlock Text="{Binding name}" />
-                                <TextBlock Text=" [" Foreground="Blue" />
+                                <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
+                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
                             </StackPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources> 
@@ -119,7 +118,7 @@
                 
                 <StackPanel Orientation="Vertical" Grid.Row="2">
                     <!-- Scan Button -->
-                    <Button Width="50" Height="25" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open"> Scan Drive </Button>
+                    <Button Width="100" Height="25" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open"> Scan This Drive </Button>
 
                     <!-- Drive List -->
                     <DataGrid Name="DriveList" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">
