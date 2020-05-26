@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,16 +10,16 @@ namespace Drive_Scan
     /// <summary>
     /// Stores useful info on folders
     /// </summary>
-    public struct FolderInfo
+    public class FolderInfo
     {
-        public string path {  get; set;  }
-        public string name {  get; set;  }
-        public long size  {  get; set;  }
-        public string[] splitPath  {  get; set;  }
-        public ObservableCollection<FolderInfo> subfolders  {  get; set;  }
+        public string path;
+        public string name;
+        public long size;
+        public string[] splitPath;
+        public ObservableCollection<FolderInfo> subfolders;
         //public ObservableCollection<FolderInfo> Subfolders {    get { return subfolders; }    }
 
-        public ObservableCollection<FileInfo> files  {  get; set;  }
+        public ObservableCollection<FileInfo> files;
 
         /// <summary>
         /// Constructor
@@ -40,11 +42,6 @@ namespace Drive_Scan
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public FolderInfo GetSubFolderByPath(string path)
-        {
-            throw new NotImplementedException();
-        }
-
         public void CreateSubFolder(long size, string path)
         {
             subfolders.Add(new FolderInfo(size, path));
@@ -53,33 +50,31 @@ namespace Drive_Scan
         ///<summary>
         ///Gets a child of this folder by its name
         ///<summary>
-        public FolderInfo GetSubFolderByName(string name)
+        public FolderInfo GetSubFolderByName(string _name)
         {
-            //Crafty idiot proofing
-            if (name == "con".ToUpper())
-            {
-                throw new InvalidOperationException("con isn't a real folder name");
-            }
+            // //Crafty idiot proofing
+            // if (name == "con".ToUpper())
+            // {
+            //     throw new InvalidOperationException("con isn't a real folder name");
+            // }
 
-            //This is super jank, basically it relies on the fact that you can't name a folder "Con" on windows
-            //Because FolderInfo is a struct not a class it is non nullable so i can't leave it un instantiated
-            //So that when we return Con we know for certain that it didn't find a file and it isn't a real folder
-            FolderInfo foundFolder = new FolderInfo(0, "Con");
+            // //This is super jank, basically it relies on the fact that you can't name a folder "Con" on windows
+            // //Because FolderInfo is a struct not a class it is non nullable so i can't leave it un instantiated
+            // //So that when we return Con we know for certain that it didn't find a file and it isn't a real folder
+            // FolderInfo foundFolder = new FolderInfo(0, "Con");
 
-            foreach (FolderInfo folder in subfolders)
-            {
-                if (folder.name == name)
-                {
-                    foundFolder = folder;
-                }
-            }
+            // foreach (FolderInfo folder in subfolders)
+            // {
+            //     if (folder.name == name)
+            //     {
+            //         foundFolder = folder;
+            //     }
+            // }
+
+            //Find that folder
+            FolderInfo foundFolder = subfolders.ToList().Find(x => x.name == name);
             
             return foundFolder;
-        }
-
-        public FileInfo GetFileByPath(string path)
-        {
-            throw new NotImplementedException();
         }
 
         // public FileInfo GetFileByName(string name)
@@ -100,32 +95,23 @@ namespace Drive_Scan
 
             FolderInfo currentFolder = this;
 
-            //For every chunk of the path except the last entry (filename)
-            for (int i = 0; i < newFile.splitPath.Length-1; i++)
+            //For every chunk of the path except the last entry (filename) and first entry (root)
+            for (int i = 1; i < newFile.splitPath.Length-1; i++)
             {
                 
-                //Loop through all the existing folders to see if the one we're looking for already exists
-                for (int j = 0; j <= currentFolder.subfolders.Count; j++)
+                //If the folder has already been created then go to that and move on to the next part of the path
+                if (currentFolder.GetSubFolderByName(newFile.splitPath[i]) != null)
                 {
-                    //Check if this is the right folder
-                    if (currentFolder.subfolders.Count > 0 && currentFolder.subfolders[j].name == newFile.splitPath[i])
-                    {
-                        //If so set this as the current folder and break out of the loop, moving to the next part of the path
-                        currentFolder = currentFolder.subfolders[j];
-                        break;
-                    }
-                    //If this is the last folder and we didn't find a folder with the right name and this isn't the right folder already, create the folder
-                    else if (j == currentFolder.subfolders.Count && newFile.splitPath[newFile.splitPath.Length-2] != currentFolder.name)
-                    {
-                        /* Add the needed folder by combining the currentFolder path and the folder we were looking for
-                        Then set it as the current folder, then move on to the next part of the path */
-                        currentFolder.subfolders.Add(new FolderInfo(0, $"{currentFolder.path}\\{newFile.splitPath[i]}"));
-                        currentFolder = currentFolder.subfolders.Last();
-                        break;
-                    }
+                    currentFolder = currentFolder.GetSubFolderByName(newFile.splitPath[i]);
+                    continue;
                 }
-
-                
+                else
+                {
+                    //Create the folder
+                    currentFolder.subfolders.Add(new FolderInfo(0, currentFolder.path + newFile.splitPath[i]));
+                    continue;
+                }
+            
             }
 
             //Add the file to the folder
@@ -146,50 +132,22 @@ namespace Drive_Scan
 
             FolderInfo currentFolder = this;
 
-            //For every chunk of the path
-            for (int i = 0; i < updatedFolderInfo.splitPath.Length; i++)
+            //For every chunk of the path except the final (destination folder) and the first (root)
+            for (int i = 1; i < updatedFolderInfo.splitPath.Length-1; i++)
             {
                 
-                //Loop through all the existing folders to see if the one we're looking for already exists
-                for (int j = 0; j <= currentFolder.subfolders.Count; j++)
+                //If the folder has already been created then go to that and move on to the next part of the path
+                if (currentFolder.GetSubFolderByName(updatedFolderInfo.splitPath[i]) != null)
                 {
-                    //Check if this is the right folder
-                    if (currentFolder.subfolders.Count > 0 && currentFolder.subfolders[j].name == updatedFolderInfo.splitPath[i])
-                    {
-                        //If this is the last chunk of the target path (folderInfo.name)
-                        if (i == updatedFolderInfo.splitPath.Length-1)
-                        {
-                            //Update the folder and return it
-                            currentFolder.subfolders[j].ModifySize(updatedFolderInfo.size);
-                            return currentFolder.subfolders[j];
-                        }
-                        //If so set this as the current folder and break out of the loop, moving to the next part of the path
-                        currentFolder = currentFolder.subfolders[j];
-                        break;
-                    }
-                    //If this is the last folder and we didn't find a folder with the right name and this isn't the right folder already, create the folder
-                    else if (j == currentFolder.subfolders.Count && updatedFolderInfo.splitPath[updatedFolderInfo.splitPath.Length-1] != currentFolder.name)
-                    {
-                        //If this is the last chunk of the target path (folderInfo.name)
-                        if (i == updatedFolderInfo.splitPath.Length-1)
-                        {
-                            //Update the folder and return it
-                            currentFolder.subfolders[j].ModifySize(updatedFolderInfo.size);
-                            return currentFolder.subfolders[j];
-                        }
-                        else 
-                        {
-                            /* Add the needed folder by combining the currentFolder path and the folder we were looking for
-                            Then set it as the current folder, then move on to the next part of the path (set the new folder as currentfolder because our final destination is somewhere in this folder) */
-                            currentFolder.subfolders.Add(new FolderInfo(0, $"{currentFolder.path}\\{updatedFolderInfo.splitPath[i]}"));
-                            currentFolder = currentFolder.subfolders.Last();
-                        }
-                        
-                        break;
-                    }
+                    currentFolder = currentFolder.GetSubFolderByName(updatedFolderInfo.splitPath[i]);
+                    continue;
                 }
-
-                Console.WriteLine("This shouldn't be happening");
+                else
+                {
+                    //Create the folder
+                    currentFolder.subfolders.Add(new FolderInfo(0, currentFolder.path + updatedFolderInfo.splitPath[i]));
+                    continue;
+                }
             }
 
             // if (currentFolder.subfolders.Contains())
@@ -197,14 +155,23 @@ namespace Drive_Scan
                 
             // }
 
-            // //Add the file to the folder
-            //     currentFolder.subfolders.Add(folderInfo);
+            FolderInfo existingFolder = currentFolder.GetSubFolderByName(updatedFolderInfo.name);
+
+            //Update the folder's size if it isn't there
+            if (existingFolder != null)
+            {
+                existingFolder.size = updatedFolderInfo.size;
+            }
+            else    //Add the folder if it isn't there for some reason
+            {
+                currentFolder.subfolders.Add(updatedFolderInfo);
+            }
 
             return updatedFolderInfo;
         }
     }
 
-    public struct FileInfo
+    public class FileInfo
     {
         public string name;
         public string path;

@@ -99,17 +99,19 @@ namespace Drive_Scan
             //If this is the root folder
             if (isRoot && isFirstFile)
             {
-                scannedDrives[0].UpdateFolder(foundFile.size, 
+                scannedDrives.Add(new FolderInfo(foundFile.size,
                     //This part is also jank. it finds the last string in an array of strings that isn't null 
-                    foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
+                    foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]));
             }
             else if (!foundFile.isFolder)
             {
-                scannedDrives[0].AddFileAtPath(foundFile.size, foundFile.path);
+                FolderInfo root = scannedDrives.Where(x => x.name == foundFile.path.Split("\\").Last()) as FolderInfo;
+                root.AddFileAtPath(foundFile.size, foundFile.path);
             }
             else 
             {
-                scannedDrives[0].UpdateFolder(foundFile.size, foundFile.path);
+                FolderInfo root = scannedDrives.Where(x => x.name == foundFile.path.Split("\\").Last()) as FolderInfo;
+                root.UpdateFolder(foundFile.size, foundFile.path);
             }
         }
 
