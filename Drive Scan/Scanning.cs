@@ -65,7 +65,7 @@ namespace Drive_Scan
                     try
                     {
                         // For every subfolder, add path to queue
-                        foreach (string subDir in Directory.EnumerateDirectories(path, filterDirectory)) 
+                        foreach (string subDir in Directory.EnumerateDirectories(path/*, filterDirectory */)) 
                         {
                             queue.Enqueue(subDir);
                         }
@@ -75,12 +75,16 @@ namespace Drive_Scan
                     if (firstFile) firstFile = false;
 
                     // Get all files in folder (this will not get directories)
-                    foreach (string file in Directory.EnumerateFiles(path, filterFile))
+                    foreach (string file in Directory.EnumerateFiles(path/*, filterFile*/))
                     {
                         // Check file size and yield 
                         long size = new System.IO.FileInfo(file).Length;
                         // Add file size to total directory size
                         totalSize += size;
+                        
+                        //Debugging
+                        Console.WriteLine(new File(size, file, false, false, isFirstFile));
+
                         // Yield file object
                         yield return new File(size, file, false, false, isFirstFile);
                     }
@@ -88,6 +92,7 @@ namespace Drive_Scan
                     // If not default filter or greater than one, will prevent empty folders from returning when a file filter is set
                     if (filterFile == "?.*" || totalSize > 0)
                     {
+                        Console.WriteLine(new File(totalSize, path, true, path.Length == 3 && path.EndsWith(@":\"), isFirstFile));
                         // After all files, yield directory with total directory size
                         yield return new File(totalSize, path, true, path.Length == 3 && path.EndsWith(@":\"), isFirstFile);
                     }

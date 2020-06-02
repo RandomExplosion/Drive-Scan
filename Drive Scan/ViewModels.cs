@@ -12,14 +12,14 @@ namespace Drive_Scan
     /// </summary>
     public class FolderInfo
     {
-        public string path;
-        public string name;
-        public long size;
-        public string[] splitPath;
-        public ObservableCollection<FolderInfo> subfolders;
+        public string path { get; set; }
+        public string name { get; set; }
+        public long size { get; set; }
+        public string[] splitPath { get; set; }
+        public ObservableCollection<FolderInfo> subfolders { get; set; }
         //public ObservableCollection<FolderInfo> Subfolders {    get { return subfolders; }    }
 
-        public ObservableCollection<FileInfo> files;
+        public ObservableCollection<FileInfo> files { get; set; }
 
         /// <summary>
         /// Constructor
@@ -52,7 +52,7 @@ namespace Drive_Scan
         ///<summary>
         public FolderInfo GetSubFolderByName(string _name)
         {
-            // //Crafty idiot proofing
+            // //
             // if (name == "con".ToUpper())
             // {
             //     throw new InvalidOperationException("con isn't a real folder name");
@@ -72,7 +72,13 @@ namespace Drive_Scan
             // }
 
             //Find that folder
-            FolderInfo foundFolder = subfolders.ToList().Find(x => x.name == name);
+            FolderInfo foundFolder = null;
+            foreach (FolderInfo subfolder in subfolders)
+            {
+                if(subfolder.name == _name){
+                    foundFolder = subfolder;
+                }
+            }
             
             return foundFolder;
         }
@@ -108,7 +114,7 @@ namespace Drive_Scan
                 else
                 {
                     //Create the folder
-                    currentFolder.subfolders.Add(new FolderInfo(0, currentFolder.path + newFile.splitPath[i]));
+                    currentFolder.subfolders.Add(new FolderInfo(0, $"{currentFolder.path}\\{newFile.splitPath[i]}"));
                     continue;
                 }
             
@@ -118,11 +124,6 @@ namespace Drive_Scan
                 currentFolder.files.Add(newFile);
 
             return newFile;
-        }
-
-        public void ModifySize(long newSize)
-        {
-            size = newSize;
         }
 
         public FolderInfo UpdateFolder(long Size, string Path)
@@ -173,10 +174,10 @@ namespace Drive_Scan
 
     public class FileInfo
     {
-        public string name;
-        public string path;
-        public string[] splitPath;
-        public long size;
+        public string name { get; set; }
+        public string path { get; set; }
+        public string[] splitPath { get; set; }
+        public long size { get; set; }
 
         /// <summary>
         /// ///Converts from File in Drive_Scan.Scanning to a FileInfo for use in the UI
