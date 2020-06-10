@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources/icon.ico" />
+    <Resource Include="Resources/DriveFind.ico" />
     <Resource Include="Resources/*.ttf" />
   </ItemGroup>
 
