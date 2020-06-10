@@ -92,7 +92,7 @@
                 <TreeView Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}">
                     <TreeView.Resources>
                         <!-- Folder Template -->
-                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=subfolders}">
+                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children}">
                             <!--<HierarchicalDataTemplate.ItemTemplate>-->
                             <StackPanel Orientation="Horizontal">
                                 <!--<Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />-->
@@ -104,7 +104,7 @@
                         </HierarchicalDataTemplate>
 
                         <!-- File Template -->
-                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}" ItemsSource="{Binding Path=files}">
+                        <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}">
                             <StackPanel Orientation="Horizontal">
                                 <!-- <Image Source="" Margin="0,0,5,0" /> -->
                                 <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>

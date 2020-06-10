@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.IO;
 using System.Security.Cryptography;
 using System.ComponentModel;
 using System;
@@ -10,26 +12,17 @@ namespace Drive_Scan
     /// <summary>
     /// Stores useful info on folders
     /// </summary>
-    public class FolderInfo
+    public class FolderInfo : FileInfo
     {
-        public string path { get; set; }
-        public string name { get; set; }
-        public long size { get; set; }
-        public string[] splitPath { get; set; }
-        public ObservableCollection<FolderInfo> subfolders { get; set; }
-        //public ObservableCollection<FolderInfo> Subfolders {    get { return subfolders; }    }
-
-        public ObservableCollection<FileInfo> files { get; set; }
-
+        public ObservableCollection<FileInfo> children { get; set; }
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="_size"></param>
         /// <param name="_path"></param>
-        public FolderInfo(long _size, string _path)
+        public FolderInfo(long _size, string _path) : base(_size, _path)
         {
-            this.subfolders = new ObservableCollection<FolderInfo>();
-            this.files = new ObservableCollection<FileInfo>();
+            this.children = new ObservableCollection<FileInfo>();
 
             this.path = _path;
             this.size = _size;
@@ -44,7 +37,7 @@ namespace Drive_Scan
         /// <returns></returns>
         public void CreateSubFolder(long size, string path)
         {
-            subfolders.Add(new FolderInfo(size, path));
+            children.Add(new FolderInfo(size, path));
         }
 
         ///<summary>
@@ -73,10 +66,14 @@ namespace Drive_Scan
 
             //Find that folder
             FolderInfo foundFolder = null;
-            foreach (FolderInfo subfolder in subfolders)
+            foreach (FileInfo child in children)
             {
-                if(subfolder.name == _name){
-                    foundFolder = subfolder;
+                if(child.name == _name)
+                {
+                    if(child.GetType().GetProperty("children") != null)
+                    {
+                        foundFolder = child as FolderInfo;
+                    }
                 }
             }
             
@@ -114,14 +111,14 @@ namespace Drive_Scan
                 else
                 {
                     //Create the folder
-                    currentFolder.subfolders.Add(new FolderInfo(0, $"{currentFolder.path}\\{newFile.splitPath[i]}"));
+                    currentFolder.children.Add(new FolderInfo(0, $"{currentFolder.path}\\{newFile.splitPath[i]}"));
                     continue;
                 }
             
             }
 
             //Add the file to the folder
-                currentFolder.files.Add(newFile);
+                currentFolder.children.Add(newFile);
 
             return newFile;
         }
@@ -146,7 +143,7 @@ namespace Drive_Scan
                 else
                 {
                     //Create the folder
-                    currentFolder.subfolders.Add(new FolderInfo(0, currentFolder.path + updatedFolderInfo.splitPath[i]));
+                    currentFolder.children.Add(new FolderInfo(0, currentFolder.path + updatedFolderInfo.splitPath[i]));
                     continue;
                 }
             }
@@ -165,7 +162,7 @@ namespace Drive_Scan
             }
             else    //Add the folder if it isn't there for some reason
             {
-                currentFolder.subfolders.Add(updatedFolderInfo);
+                currentFolder.children.Add(updatedFolderInfo);
             }
 
             return updatedFolderInfo;
