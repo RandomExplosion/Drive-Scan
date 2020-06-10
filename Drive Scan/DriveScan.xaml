@@ -9,7 +9,7 @@
         mc:Ignorable="d" 
         WindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}" 
         NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
-        BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/icon.ico"
+        BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/DriveFind.ico"
         Height="Auto" Width="Auto">
 
     <!-- Window Resources: Converters, Icons etc -->
@@ -94,22 +94,22 @@
                         <!-- Folder Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children}">
                             <!--<HierarchicalDataTemplate.ItemTemplate>-->
-                            <StackPanel Orientation="Horizontal">
+                            <DockPanel>
                                 <!--<Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />-->
-                                <TextBlock Text="{Binding Path=name}" Style="{DynamicResource Mahapps.Styles.TextBlock}" HorizontalAlignment="Left"/>
-                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.Label}" HorizontalAlignment="Right"/>
+                                <TextBlock Text="{Binding Path=name}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Left"/>
+                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.Label}" DockPanel.Dock="Right"/>
                                 <!-- <TextBlock Text=" [" Foreground="Blue" /> -->
-                            </StackPanel>
+                            </DockPanel>
                             <!--</HierarchicalDataTemplate.ItemTemplate>-->
                         </HierarchicalDataTemplate>
 
                         <!-- File Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}">
-                            <StackPanel Orientation="Horizontal">
+                            <DockPanel>
                                 <!-- <Image Source="" Margin="0,0,5,0" /> -->
-                                <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
-                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
-                            </StackPanel>
+                                <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Left"/>
+                                <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Right"/>
+                            </DockPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources> 
                     
