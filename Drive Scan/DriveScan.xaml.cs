@@ -9,6 +9,7 @@ using ControlzEx.Theming;
 using System.Diagnostics;
 using Drive_Scan.Config;
 using System.Collections.Generic;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Drive_Scan
 {
@@ -77,11 +78,14 @@ namespace Drive_Scan
         /// Scans a drive with the given name (Obtainable from SystemIO.DriveInfo)
         /// </summary>
         /// <param name="DriveName"></param>
-        public void ScanDrive(string DriveName)
+        public async void ScanDrive(string DriveName)
         {
-            MessageBoxResult answer = MessageBox.Show("dOeS U wANtZ tU sCaN tHis dRiVE?", "DoeS U wANtZ tU sCaN tHis dRiVE?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (answer == MessageBoxResult.Yes)
-            {
+            // Prompt the user for if they actually wanted to scan this drive
+            MessageDialogResult res = await ((MetroWindow)(Application.Current.MainWindow)).ShowMessageAsync("Confirm", $"Are you sure you want to scan this drive? ({DriveName})", MessageDialogStyle.AffirmativeAndNegative);
+            
+            // If they say yes
+            if (res == MessageDialogResult.Affirmative) 
+            { 
                 DriveInfo drive = DriveList.SelectedItem as DriveInfo;
                 Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
                 Scanning.DirectoryScanner.FindFiles(drive.Name, OnFileFound);
