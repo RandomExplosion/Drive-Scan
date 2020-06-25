@@ -119,8 +119,18 @@
                 <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{ DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
                 
                 <StackPanel Orientation="Vertical" Grid.Row="2">
-                    <!-- Scan Button -->
-                    <Button Width="100" Height="25" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open"> Scan This Drive </Button>
+                    <Grid Width="Auto" Height="25">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                    
+                        <!-- Scan Button -->
+                        <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open"> Scan This Drive </Button>
+                        <ProgressBar Name="ProgBar" Grid.Row="0" Grid.Column="1" IsIndeterminate="True" Width="Auto" Visibility="Collapsed"/>
+                    </Grid>
 
                     <!-- Drive List -->
                     <DataGrid Name="DriveList" GridLinesVisibility="Horizontal" AutoGenerateColumns="False" IsReadOnly="True">

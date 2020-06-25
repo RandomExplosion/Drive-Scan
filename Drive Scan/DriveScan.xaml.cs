@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System;
 using System.Windows;
@@ -25,6 +27,8 @@ namespace Drive_Scan
         //Viewmodel for scanned folders and paths
         public ObservableCollection<FolderInfo> scannedDrives;
 
+        static ThreadLocal<ObservableCollection<FolderInfo>> _workingTree = new ThreadLocal<ObservableCollection<FolderInfo>>();
+
         //Runs on window open
         public DriveScanWindow()
         {
@@ -41,7 +45,6 @@ namespace Drive_Scan
 
             //Populate Dir Tree
             DirectoryTree.ItemsSource = scannedDrives;
-            
         }
 
 #region Scan File Command
@@ -88,7 +91,9 @@ namespace Drive_Scan
             { 
                 DriveInfo drive = DriveList.SelectedItem as DriveInfo;
                 Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
-                Scanning.DirectoryScanner.FindFiles(drive.Name, OnFileFound);
+                //Show the Bar
+                ProgBar.Visibility = Visibility.Visible;
+                Task scanTask = Task.Run(() => Scanning.DirectoryScanner.FindFiles(drive.Name, OnFileFound));
             }
         }
 
@@ -101,34 +106,42 @@ namespace Drive_Scan
         public void OnFileFound(Scanning.File foundFile, bool isFirstFile, bool isRoot)
         {
             //Console.WriteLine(foundFile);
-        
+
             //If this is the root folder
             if (isRoot && isFirstFile)
             {
                 //If this is the second time this drive's root has been retuned (has the final size)
                 if (foundFile.size > 0)
-                {
+                {   
                     //Update the size
                     scannedDrives.Where(x => x.name == foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]).First().size = foundFile.size;
+                    //ProgBar.Visibility = Visibility.Collapsed; //Hide the progress bar
                 }
                 else //The size is 0 (this is the first time we have had this folder returned)
                 {
+                    //Wrap in Dispatcher Call
+                    
                     scannedDrives.Add(new FolderInfo(foundFile.size,
                     //This part is also jank. it finds the last string in an array of strings that isn't null 
                     foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]));
+                    
                 }
             }
             else if (!foundFile.isFolder)
             {
+                
                 string rootName = foundFile.path.Split("\\").First();
                 IEnumerable<FolderInfo> root = scannedDrives.Where(x => x.name == rootName);
                 root.First().AddFileAtPath(foundFile.size, foundFile.path);
+                
             }
             else 
-            {
+            {   
+                
                 string rootName = foundFile.path.Split("\\").First();
                 IEnumerable<FolderInfo> root = scannedDrives.Where(x => x.name == rootName);
                 root.First().UpdateFolder(foundFile.size, foundFile.path);
+                
             }
         }
 
