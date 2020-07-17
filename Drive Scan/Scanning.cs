@@ -51,7 +51,7 @@ namespace Drive_Scan
                                 queue.Enqueue(subDir);
                             }
                         }
-                    } catch (UnauthorizedAccessException) { }
+                    } catch (UnauthorizedAccessException e) { Console.WriteLine(e.Message); }
 
                     bool isFirstFile = firstFile;
                     if (firstFile) firstFile = false;
@@ -61,7 +61,7 @@ namespace Drive_Scan
                     try
                     {
                         files = Directory.GetFiles(path);
-                    } catch (UnauthorizedAccessException) { }
+                    } catch (UnauthorizedAccessException e) { Console.WriteLine(e.Message); }
 
                     yield return new File(0, path, true);
                     if (files != null)

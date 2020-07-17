@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.IO;
+using System.Drawing;
 
 namespace Drive_Scan
 {
@@ -71,5 +72,63 @@ namespace Drive_Scan
         {
             return DependencyProperty.UnsetValue;
         }
+    }
+
+    /// <summary>
+    /// Gets the icon of a file or folder by its path and returns it as a BitmapImageSource
+    /// </summary>
+    public class AssociatedIconConverter : IValueConverter
+    {
+        public enum SourceType {File, Folder}
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            //Use shell32.dll to extract the icon by the file/folder's path
+            using (Icon icon = ExtractFromPath((string)value))
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                icon.Handle,
+                new Int32Rect(0, 0, icon.Width, icon.Height),
+                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+        #region SHGetFileInfo Usage
+
+        private static Icon ExtractFromPath(string path)
+        {
+            SHFILEINFO shinfo = new SHFILEINFO();
+            SHGetFileInfo(
+                path,
+                0, ref shinfo, (uint)Marshal.SizeOf(shinfo),
+                SHGFI_ICON | SHGFI_LARGEICON);
+            return System.Drawing.Icon.FromHandle(shinfo.hIcon);
+        }
+
+        //Struct used by SHGetFileInfo function
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SHFILEINFO
+        {
+            public IntPtr hIcon;
+            public int iIcon;
+            public uint dwAttributes;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            public string szDisplayName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
+            public string szTypeName;
+        };
+
+        [DllImport("shell32.dll")]
+        private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
+
+        private const uint SHGFI_ICON = 0x100;
+        private const uint SHGFI_LARGEICON = 0x0;
+        private const uint SHGFI_SMALLICON = 0x000000001;
+
+        #endregion
     }
 }
