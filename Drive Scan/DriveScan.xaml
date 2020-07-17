@@ -55,6 +55,7 @@
                         <MenuItem Header="Load"/>
                     </MenuItem>
                     <MenuItem Header="Options">
+                        <MenuItem Name="HiddenFiles" Header="Show Hidden Files" IsCheckable="true" Click="UpdateHiddenFiles"/>
                         <MenuItem Header="Theme">
                             <MenuItem Header="Dark" Click="ThemeSwitch"/>
                             <MenuItem Header="Light" Click="ThemeSwitch"/>

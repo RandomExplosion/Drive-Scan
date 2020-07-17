@@ -30,6 +30,8 @@ namespace Drive_Scan
             /// <param name="path">The path of the folder to start in</param>
             static IEnumerable<File> GetFiles(string inPath)
             {
+                bool showHiddenFiles = Convert.ToBoolean(Convert.ToInt16(Config.ConfigHandler.readValue("hidden")));
+
                 yield return new File(0, inPath, true, true, true);
                 long totalSize = 0;
                 bool firstFile = true;
@@ -43,7 +45,11 @@ namespace Drive_Scan
                     {
                         foreach (string subDir in Directory.GetDirectories(path))
                         {
-                            queue.Enqueue(subDir);
+                            // Ignore the system volume information directory
+                            if (!subDir.EndsWith("System Volume Information"))
+                            {
+                                queue.Enqueue(subDir);
+                            }
                         }
                     } catch (UnauthorizedAccessException) { }
 
@@ -62,9 +68,16 @@ namespace Drive_Scan
                     {
                         for (int i = 0; i < files.Length; i++)
                         {
-                            long size = new System.IO.FileInfo(files[i]).Length;
-                            folderSize += size;
-                            yield return new File(size, files[i], false, isFirstFile);
+                            System.IO.FileInfo file = new System.IO.FileInfo(files[i]);
+
+                            folderSize += file.Length;
+                            if (showHiddenFiles)
+                            {
+                                yield return new File(file.Length, files[i], false, isFirstFile);
+                            } else if (!file.Attributes.HasFlag(FileAttributes.Hidden))
+                            {
+                                yield return new File(file.Length, files[i], false, isFirstFile);
+                            }
                         }
                     }
 

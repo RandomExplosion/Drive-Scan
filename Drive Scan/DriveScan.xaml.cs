@@ -34,6 +34,7 @@ namespace Drive_Scan
         {
             InitializeComponent();
             ThemeSwitch(ConfigHandler.readValue("theme"));
+            HiddenFiles.IsChecked = Convert.ToBoolean(Convert.ToInt16(ConfigHandler.readValue("hidden")));
 
             currentWindow = this;
 
@@ -153,10 +154,16 @@ namespace Drive_Scan
         #region Ribbon Buttons
 
         /// <summary>
+        /// Update the hidden file config from the checkbox
+        /// </summary>
+        public void UpdateHiddenFiles(object sender, RoutedEventArgs e)
+        {
+            ConfigHandler.updateValue("hidden", HiddenFiles.IsChecked ? "1" : "0");
+        }
+
+        /// <summary>
         /// Switch current theme to specified theme and update config
         /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
         public void ThemeSwitch(dynamic Sender, RoutedEventArgs e = null)
         {
             //Get the name of the object the operation originated from
@@ -180,8 +187,6 @@ namespace Drive_Scan
         /// <summary>
         /// Reboot as administrator
         /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
         public void GetAdmin(object Sender, RoutedEventArgs e)
         {
             //Get application exe location
