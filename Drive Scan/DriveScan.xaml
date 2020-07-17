@@ -16,6 +16,7 @@
     <mah:MetroWindow.Resources>
         <!-- ValueConverter to convert file sizes from bytes to the appropriate units -->
         <local:FormatSizeConverter x:Key="FormatSizeConverter"/>
+        <local:AssociatedIconConverter x:Key="AssociatedIconConverter"/>
     </mah:MetroWindow.Resources>
 
     <!-- Command Bindings -->
@@ -95,7 +96,7 @@
                         <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children}">
                             <!--<HierarchicalDataTemplate.ItemTemplate>-->
                             <DockPanel>
-                                <!--<Image Source="/WpfTutorialSamples;component/Images/group.png" Margin="0,0,5,0" />-->
+                                <Image Source="{Binding path, Converter={StaticResource AssociatedIconConverter}}" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="Fant" Height="16"/>
                                 <TextBlock Text="{Binding Path=name}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Left" TextAlignment="Left"/>
                                 <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.Label}" DockPanel.Dock="Right" TextAlignment="Right"/>
                                 <!-- <TextBlock Text=" [" Foreground="Blue" /> -->
@@ -106,7 +107,7 @@
                         <!-- File Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FileInfo}">
                             <DockPanel>
-                                <!-- <Image Source="" Margin="0,0,5,0" /> -->
+                                <Image Source="{Binding path, Converter={StaticResource AssociatedIconConverter}}" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="Fant" Height="16"/>
                                 <TextBlock Text="{Binding name}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Left" TextAlignment="Left"/>
                                 <TextBlock Text="{Binding size, Converter={StaticResource FormatSizeConverter}}" Style="{DynamicResource Mahapps.Styles.TextBlock}" DockPanel.Dock="Right" TextAlignment="Right"/>
                             </DockPanel>
