@@ -82,30 +82,14 @@ namespace Drive_Scan
         public enum SourceType {File, Folder}
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // if ((SourceType)parameter == SourceType.File)
-            // {
-            //     using (Icon sysicon = System.Drawing.Icon.ExtractAssociatedIcon((string)value))
-            //     {
-            //         return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-            //         sysicon.Handle,
-            //         new Int32Rect(0, 0, sysicon.Width, sysicon.Height),
-            //         System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-            //     }
-            // }
-            // else if ((SourceType)parameter == SourceType.Folder)
-            // {
-                using (Icon sysfoldericon = ExtractFromPath((string)value))
-                {
-                    return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                    sysfoldericon.Handle,
-                    new Int32Rect(0, 0, sysfoldericon.Width, sysfoldericon.Height),
-                    System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-                }
-            // }
-            // else 
-            // {
-            //     return DependencyProperty.UnsetValue;
-            // }
+            //Use shell32.dll to extract the icon by the file/folder's path
+            using (Icon icon = ExtractFromPath((string)value))
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                icon.Handle,
+                new Int32Rect(0, 0, icon.Width, icon.Height),
+                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
