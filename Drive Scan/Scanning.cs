@@ -45,7 +45,11 @@ namespace Drive_Scan
                     {
                         foreach (string subDir in Directory.GetDirectories(path))
                         {
-                            queue.Enqueue(subDir);
+                            // Ignore the system volume information directory
+                            if (!subDir.EndsWith("System Volume Information"))
+                            {
+                                queue.Enqueue(subDir);
+                            }
                         }
                     } catch (UnauthorizedAccessException) { }
 
@@ -65,6 +69,7 @@ namespace Drive_Scan
                         for (int i = 0; i < files.Length; i++)
                         {
                             System.IO.FileInfo file = new System.IO.FileInfo(files[i]);
+
                             folderSize += file.Length;
                             if (showHiddenFiles)
                             {
