@@ -26,7 +26,7 @@ namespace Drive_Scan
                     {
                         sw.WriteLine("theme=dark");
                         sw.WriteLine("debug=1");
-                        sw.WriteLine("hidden=1");
+                        sw.WriteLine("hidden=0");
                     }
                 }
 
@@ -56,6 +56,7 @@ namespace Drive_Scan
             {
                 Dictionary<string, string> data = readConfig();
                 // Update value in local instance of data
+                //   (this also has the cool side effect of creating it if it does not exist)
                 data[key] = value;
 
                 StringBuilder sb = new StringBuilder();
