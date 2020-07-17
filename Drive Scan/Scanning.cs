@@ -62,9 +62,12 @@ namespace Drive_Scan
                     {
                         for (int i = 0; i < files.Length; i++)
                         {
-                            long size = new System.IO.FileInfo(files[i]).Length;
-                            folderSize += size;
-                            yield return new File(size, files[i], false, isFirstFile);
+                            System.IO.FileInfo file = new System.IO.FileInfo(files[i]);
+                            folderSize += file.Length;
+                            if (!file.Attributes.HasFlag(FileAttributes.Hidden))
+                            {
+                                yield return new File(file.Length, files[i], false, isFirstFile);
+                            }
                         }
                     }
 
