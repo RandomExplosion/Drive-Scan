@@ -48,6 +48,13 @@ namespace Drive_Scan
             /// <summary> Read a value by key from the config </summary>
             public static string readValue(string key)
             {
+                Dictionary<string, string> data = readConfig();
+                // Ensure the key actually exists before we return it
+                if (data.ContainsKey(key)) return data[key];
+
+                // If it doesn't then we re-create the file (this resets the config to the defaults)
+                File.Delete(path);
+                // Now that the file is deleted readConfig will automatically re-create it with the correct keys
                 return readConfig()[key];
             }
 
