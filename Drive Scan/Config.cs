@@ -26,6 +26,7 @@ namespace Drive_Scan
                     {
                         sw.WriteLine("theme=dark");
                         sw.WriteLine("debug=1");
+                        sw.WriteLine("hidden=1");
                     }
                 }
 
