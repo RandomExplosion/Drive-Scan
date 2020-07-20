@@ -35,10 +35,10 @@ namespace Drive_Scan
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public void CreateSubFolder(long size, string path)
-        {
-            children.Add(new FolderInfo(size, path));
-        }
+        // public void CreateSubFolder(long size, string path)
+        // {
+        //     children.Add(new FolderInfo(size, path));
+        // }
 
         ///<summary>
         ///Gets a child of this folder by its name

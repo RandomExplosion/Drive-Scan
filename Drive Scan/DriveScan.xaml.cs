@@ -129,8 +129,8 @@ namespace Drive_Scan
                 }
                 else //The size is 0 (this is the first time we have had this folder returned)
                 {
-                    //Wrap in Dispatcher Call
 
+                    //Initialise the working tree
                     _workingTree.Value = new FolderInfo(foundFile.size,
                     //This part is also jank. it finds the last string in an array of strings that isn't null 
                     foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
