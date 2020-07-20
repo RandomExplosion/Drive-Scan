@@ -45,25 +45,7 @@ namespace Drive_Scan
         ///<summary>
         public FolderInfo GetSubFolderByName(string _name)
         {
-            // //
-            // if (name == "con".ToUpper())
-            // {
-            //     throw new InvalidOperationException("con isn't a real folder name");
-            // }
-
-            // //This is super jank, basically it relies on the fact that you can't name a folder "Con" on windows
-            // //Because FolderInfo is a struct not a class it is non nullable so i can't leave it un instantiated
-            // //So that when we return Con we know for certain that it didn't find a file and it isn't a real folder
-            // FolderInfo foundFolder = new FolderInfo(0, "Con");
-
-            // foreach (FolderInfo folder in subfolders)
-            // {
-            //     if (folder.name == name)
-            //     {
-            //         foundFolder = folder;
-            //     }
-            // }
-
+        
             //Find that folder
             FolderInfo foundFolder = null;
             foreach (FileInfo child in children)
