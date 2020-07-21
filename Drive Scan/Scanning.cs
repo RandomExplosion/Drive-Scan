@@ -30,62 +30,40 @@ namespace Drive_Scan
             /// <param name="path">The path of the folder to start in</param>
             static IEnumerable<File> GetFiles(string inPath)
             {
+                // Read the config file for whether we show hidden files or not
                 bool showHiddenFiles = Convert.ToBoolean(Convert.ToInt16(Config.ConfigHandler.readValue("hidden")));
 
+                // Calculate the file enumeration options based on whether we are showing hidden files
+                EnumerationOptions eopts = new EnumerationOptions();
+                eopts.AttributesToSkip = (!showHiddenFiles ? FileAttributes.Hidden : 0) | FileAttributes.System;
+                eopts.IgnoreInaccessible = true;
+                eopts.RecurseSubdirectories = true;
+
+                // Return the root directory with a size of 0
                 yield return new File(0, inPath, true, true, true);
-                long totalSize = 0;
-                bool firstFile = true;
 
-                Queue<string> queue = new Queue<string>();
-                queue.Enqueue(inPath);
-                while (queue.Count > 0)
+                // Recursively enumerate through all the files and directories in the target path
+                foreach (string file in Directory.EnumerateFileSystemEntries(inPath, "*", eopts))
                 {
-                    string path = queue.Dequeue();
-                    try
-                    {
-                        foreach (string subDir in Directory.GetDirectories(path))
-                        {
-                            // Ignore the system volume information directory
-                            if (!subDir.EndsWith("System Volume Information"))
-                            {
-                                queue.Enqueue(subDir);
-                            }
-                        }
-                    } catch (UnauthorizedAccessException e) { Console.WriteLine(e.Message); }
+                    // Get the file attributes of the found file
+                    FileAttributes attr = System.IO.File.GetAttributes(file);
 
-                    bool isFirstFile = firstFile;
-                    if (firstFile) firstFile = false;
-
-                    long folderSize = 0;
-                    string[] files = null;
-                    try
-                    {
-                        files = Directory.GetFiles(path);
-                    } catch (UnauthorizedAccessException e) { Console.WriteLine(e.Message); }
-
-                    yield return new File(0, path, true);
-                    if (files != null)
-                    {
-                        for (int i = 0; i < files.Length; i++)
-                        {
-                            System.IO.FileInfo file = new System.IO.FileInfo(files[i]);
-
-                            folderSize += file.Length;
-                            if (showHiddenFiles)
-                            {
-                                yield return new File(file.Length, files[i], false, isFirstFile);
-                            } else if (!file.Attributes.HasFlag(FileAttributes.Hidden))
-                            {
-                                yield return new File(file.Length, files[i], false, isFirstFile);
-                            }
-                        }
+                    // Bitwise math to quickly determine if the given path is a directory
+                    if ((attr & FileAttributes.Directory) == FileAttributes.Directory) {
+                        /* Is a directory */
+                        DirectoryInfo info = new DirectoryInfo(file);
+                        // Calculate the size of the directory by doing a sum of all the child files
+                        long size = info.EnumerateFiles("*", eopts).Sum(file => file.Length);
+                        yield return new File(size, file, true);
+                    } else {
+                        /* Is not a directory (is a file) */
+                        System.IO.FileInfo info = new System.IO.FileInfo(file);
+                        yield return new File(info.Length, file, false);
                     }
-
-                    totalSize += folderSize;
-                    yield return new File(folderSize, path, true, isFirstFile, path == inPath);
                 }
-                
-                yield return new File(totalSize, inPath, true, true, true);
+
+                // Return the size of the entire drive
+                yield return new File((new DirectoryInfo(inPath)).EnumerateFiles("*", eopts).Sum(file => file.Length), inPath, true, true, true);
             }
         }
 
