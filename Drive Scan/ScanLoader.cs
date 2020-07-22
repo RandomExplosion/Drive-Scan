@@ -61,12 +61,6 @@ namespace Drive_Scan
                     // Convert each chunk back into the original type
                     files.Add(new Scanning.File(long.Parse(chunks[1]), chunks[0], Convert.ToBoolean(Convert.ToInt16(chunks[2])), Convert.ToBoolean(Convert.ToInt16(chunks[3])), Convert.ToBoolean(Convert.ToInt16(chunks[4]))));
                 }
-
-                foreach (Scanning.File file in files)
-                {
-                    Console.WriteLine(file);
-                }
-                /*  TODO: Actually re-populate the treeview  */
             }
         }
 

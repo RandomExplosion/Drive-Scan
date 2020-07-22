@@ -236,15 +236,19 @@ namespace Drive_Scan
                 //Show the Bar
                 ProgBar.Visibility = Visibility.Visible;
                 //Scan the drive asynchronously then add the drive tree to the TreeView
-                Task scanTask = Task.Run(() => {Scanning.DirectoryScanner.FindFiles(drive.Name, OnFileFound);
+                Task scanTask = Task.Run(() => {
+                    Scanning.DirectoryScanner.FindFiles(drive.Name, (file, isFirstFile, isRoot) => {
+                        // Add the file to the scan
+                        currentScan.files.Add(file);
+                        OnFileFound(file, isFirstFile, isRoot);
+                    });
                 
                     //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
-                    Application.Current.Dispatcher.Invoke( () => 
+                    Application.Current.Dispatcher.Invoke(() => 
                     {
                         scannedDrives.Add(_workingTree.Value);  //Add drive to tree
                         ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
                     });
-                
                 });
             }
         }
@@ -257,9 +261,6 @@ namespace Drive_Scan
         /// <param name="isRoot"></param>
         public void OnFileFound(Scanning.File foundFile, bool isFirstFile, bool isRoot)
         {
-            // Add the file to the scan
-            currentScan.files.Add(foundFile);
-
             //If this is the root folder
             if (isRoot && isFirstFile)
             {
@@ -343,7 +344,24 @@ namespace Drive_Scan
 
             if (result == true)
             {
-                currentScan.Load(dlg.FileName);
+                // Show the progress bar
+                ProgBar.Visibility = Visibility.Visible;
+
+                //Scan the drive asynchronously then add the drive tree to the TreeView
+                Task scanTask = Task.Run(() => {
+                    // Load the data from the file
+                    currentScan.Load(dlg.FileName);
+
+                    // Run the onfilefound function for each of the files found from the scanner load
+                    currentScan.files.ForEach(file => OnFileFound(file, file.isFirstFile, file.isRoot));
+                
+                    //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
+                    Application.Current.Dispatcher.Invoke(() => 
+                    {
+                        scannedDrives.Add(_workingTree.Value);  //Add drive to tree
+                        ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
+                    });
+                });
             }
         }
 
