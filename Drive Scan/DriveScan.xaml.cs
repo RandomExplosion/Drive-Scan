@@ -25,6 +25,8 @@ namespace Drive_Scan
         //Singleton Pattern
         static DriveScanWindow currentWindow;
 
+        static ScanLoader currentScan = new ScanLoader();
+
         //Viewmodel for scanned folders and paths
         public ObservableCollection<FolderInfo> scannedDrives;
 
@@ -255,7 +257,8 @@ namespace Drive_Scan
         /// <param name="isRoot"></param>
         public void OnFileFound(Scanning.File foundFile, bool isFirstFile, bool isRoot)
         {
-            //Console.WriteLine(foundFile);
+            // Add the file to the scan
+            currentScan.files.Add(foundFile);
 
             //If this is the root folder
             if (isRoot && isFirstFile)
@@ -340,7 +343,7 @@ namespace Drive_Scan
 
             if (result == true)
             {
-                Console.WriteLine(dlg.FileName);
+                currentScan.Load(dlg.FileName);
             }
         }
 
@@ -359,7 +362,7 @@ namespace Drive_Scan
 
             if (result == true)
             {
-                Console.WriteLine(dlg.FileName);
+                currentScan.Save(dlg.FileName);
             }
         }
 
