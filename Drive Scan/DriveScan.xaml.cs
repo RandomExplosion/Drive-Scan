@@ -83,12 +83,13 @@ namespace Drive_Scan
 #endregion
 
         /// <summary>
-        /// Updates selectedFolder when the user double clicks on a new folder in the DirectoryTree
+        /// Updates selectedFolder when the user clicks on a new folder in the DirectoryTree
         /// (So that the Folder Contents View can update)
+        /// This is different to the behaviour in FolderContentsView where the user must double click!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnDirectoryTreeItemDoubleClick(object sender, MouseButtonEventArgs e)
+        public void OnDirectoryTreeItemClick(object sender, RoutedEventArgs e)
         {
             if (DirectoryTree.SelectedItem != null)
             {
@@ -107,9 +108,26 @@ namespace Drive_Scan
                     //Update the FolderContentsView
                     FolderContentsView.ItemsSource = selectedFolder.children;
                 }
+            }
+        }
 
-                //This is a file
-                else
+        /// <summary>
+        /// Opens File if the user double clicks on it in the DirectoryTree
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnDirectoryTreeItemDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (DirectoryTree.SelectedItem != null)
+            {
+                //Get selected item from DirectoryTree
+                FileInfo item = DirectoryTree.SelectedItem as FileInfo;
+
+                //Get attributes for the selected item
+                FileAttributes attr = File.GetAttributes(item.path);
+
+                //If the selected item is a file
+                if((attr & FileAttributes.Directory) != FileAttributes.Directory)
                 {
                     try
                     {
