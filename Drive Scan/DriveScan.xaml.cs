@@ -148,7 +148,7 @@ namespace Drive_Scan
             FileInfo item = FolderContentsView.SelectedItem as FileInfo;
 
             //Get attributes for the selected item
-            FileAttributes attr = File.GetAttributes(item.path);
+                FileAttributes attr = File.GetAttributes(item.path);
 
             //If the selected item is a folder
             if((attr & FileAttributes.Directory) == FileAttributes.Directory)
