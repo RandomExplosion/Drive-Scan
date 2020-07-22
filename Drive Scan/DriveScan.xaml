@@ -91,7 +91,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Scanned drive folder heirarchy -->
-                <TreeView x:Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}" MouseDoubleClick="OnDirectoryTreeItemDoubleClick">
+                <TreeView x:Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}" TreeViewItem.Selected="OnDirectoryTreeItemClick" MouseDoubleClick="OnDirectoryTreeItemDoubleClick">
                     <TreeView.Resources>
 
                         <!-- Node Double Click Event -->
@@ -215,9 +215,9 @@
                         <DataGridTemplateColumn Header="File Name" Width="5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Width="Auto">
+                                    <StackPanel Orientation="Horizontal" Width="Auto" Margin="1,0,0,0">
                                         <!-- <Image/> -->
-                                        <Image Source="{Binding Path=path, Converter={StaticResource AssociatedIconConverter}}" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="Fant" Height="16"/>
+                                        <Image Source="{Binding Path=path, Converter={StaticResource AssociatedIconConverter}}" Margin="5,0,0,0" RenderOptions.BitmapScalingMode="Fant" Height="16"/>
                                         <TextBlock Text="{Binding Path=name}" Style="{DynamicResource Mahapps.Styles.TextBlock}"/>
                                     </StackPanel>
                                 </DataTemplate>
