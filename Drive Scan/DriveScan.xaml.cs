@@ -237,10 +237,10 @@ namespace Drive_Scan
                 ProgBar.Visibility = Visibility.Visible;
                 //Scan the drive asynchronously then add the drive tree to the TreeView
                 Task scanTask = Task.Run(() => {
-                    Scanning.DirectoryScanner.FindFiles(drive.Name, (file, isFirstFile, isRoot) => {
+                    Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
                         // Add the file to the scan
                         currentScan.files.Add(file);
-                        OnFileFound(file, isFirstFile, isRoot);
+                        OnFileFound(file);
                     });
                 
                     //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
@@ -259,10 +259,10 @@ namespace Drive_Scan
         /// <param name="foundFile"></param>
         /// <param name="isFirstFile"></param>
         /// <param name="isRoot"></param>
-        public void OnFileFound(Scanning.File foundFile, bool isFirstFile, bool isRoot)
+        public void OnFileFound(Scanning.File foundFile)
         {
             //If this is the root folder
-            if (isRoot && isFirstFile)
+            if (foundFile.isFirstRoot)
             {
                 //If this is the second time this drive's root has been retuned (has the final size)
                 if (foundFile.size > 0)
@@ -353,7 +353,7 @@ namespace Drive_Scan
                     currentScan.Load(dlg.FileName);
 
                     // Run the onfilefound function for each of the files found from the scanner load
-                    currentScan.files.ForEach(file => OnFileFound(file, file.isFirstFile, file.isRoot));
+                    currentScan.files.ForEach(OnFileFound);
                 
                     //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
                     Application.Current.Dispatcher.Invoke(() => 

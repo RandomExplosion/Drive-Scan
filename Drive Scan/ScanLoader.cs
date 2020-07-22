@@ -24,7 +24,7 @@ namespace Drive_Scan
                 {
                     // We use a | to split the parameters since windows will not allow that character to appear in file names
                     //  We also convert the bools to be either "1" or "0" to save space
-                    data.Add($"{file.path}|{file.size}|{(file.isFolder ? 1 : 0)}|{(file.isFirstFile ? 1 : 0)}|{(file.isRoot ? 1 : 0)}");
+                    data.Add($"{file.path}|{file.size}|{(file.isFolder ? 1 : 0)}|{(file.isFirstRoot ? 1 : 0)}");
                 }
 
                 // We then use a * as the line seperator since that is another character windows will not allow and compress the resulting string
@@ -59,7 +59,7 @@ namespace Drive_Scan
                 {   
                     string[] chunks = file.Split("|");
                     // Convert each chunk back into the original type
-                    files.Add(new Scanning.File(long.Parse(chunks[1]), chunks[0], Convert.ToBoolean(Convert.ToInt16(chunks[2])), Convert.ToBoolean(Convert.ToInt16(chunks[3])), Convert.ToBoolean(Convert.ToInt16(chunks[4]))));
+                    files.Add(new Scanning.File(long.Parse(chunks[1]), chunks[0], Convert.ToBoolean(Convert.ToInt16(chunks[2])), Convert.ToBoolean(Convert.ToInt16(chunks[3]))));
                 }
             }
         }
