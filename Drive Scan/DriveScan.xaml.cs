@@ -186,7 +186,6 @@ namespace Drive_Scan
                         p.StartInfo = new ProcessStartInfo(item.path)
                         {
                             WindowStyle = ProcessWindowStyle.Normal,
-                            FileName = item.name,
                             Verb = "openas",
                             UseShellExecute = true,
                             ErrorDialog = true
