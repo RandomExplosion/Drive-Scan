@@ -91,13 +91,13 @@
                 </Grid.RowDefinitions>
 
                 <!-- Scanned drive folder heirarchy -->
-                <TreeView x:Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}">
+                <TreeView x:Name="DirectoryTree" Grid.Row="0" ItemsSource="{Binding scannedDrives}" MouseDoubleClick="OnDirectoryTreeItemDoubleClick">
                     <TreeView.Resources>
 
                         <!-- Node Double Click Event -->
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                        <!-- <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                             <EventSetter Event="MouseDoubleClick" Handler="OnDirectoryTreeItemDoubleClick"/>
-                        </Style>
+                        </Style> -->
 
                         <!-- Folder Template -->
                         <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children}">
