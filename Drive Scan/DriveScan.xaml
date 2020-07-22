@@ -52,8 +52,8 @@
             <StackPanel Orientation="Horizontal">
                 <Menu Margin="20,2,20,0">
                     <MenuItem Header="File">
-                        <MenuItem Header="Save"/>
-                        <MenuItem Header="Load"/>
+                        <MenuItem Header="Save" Click="SaveScan"/>
+                        <MenuItem Header="Load" Click="LoadScan"/>
                     </MenuItem>
                     <MenuItem Header="Options">
                         <MenuItem Name="HiddenFiles" Header="Show Hidden Files" IsCheckable="true" Click="UpdateHiddenFiles"/>

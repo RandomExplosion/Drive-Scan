@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using Microsoft.Win32;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -321,6 +322,44 @@ namespace Drive_Scan
             {
                 ConfigHandler.updateValue("theme", "light");
                 ThemeManager.Current.ChangeTheme(Application.Current, "Light.Taupe", false);
+            }
+        }
+
+        /// <Summary>
+        /// Load a scan
+        /// </summary>
+        public void LoadScan(object Sender, RoutedEventArgs e)
+        {
+            // Configure the open file dialog box
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = "drsn";
+            dlg.Filter = "Scan Files (.drsn)|*.drsn";
+
+            // Show the dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                Console.WriteLine(dlg.FileName);
+            }
+        }
+
+        /// <Summary>
+        /// Save the current scan
+        /// </summary>
+        public void SaveScan(object Sender, RoutedEventArgs e)
+        {
+            // Configure the save file dialog box
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.DefaultExt = ".drsn";
+            dlg.Filter = "Scan Files (.drsn)|*.drsn";
+
+            // Show the dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                Console.WriteLine(dlg.FileName);
             }
         }
 
