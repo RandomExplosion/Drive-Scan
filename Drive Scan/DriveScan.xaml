@@ -211,13 +211,6 @@
                 <!-- Subfolder View -->
                 <DataGrid Grid.Row="0" x:Name="FolderContentsView" AutoGenerateColumns="False" MouseDoubleClick="OnFolderContentsViewItemDoubleClick">
 
-                    <DataGrid.RowStyle>
-                        <!-- Row Double Click Event -->
-                        <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
-                            <EventSetter Event="MouseDoubleClick" Handler="OnDirectoryTreeItemDoubleClick"/>
-                        </Style>
-                    </DataGrid.RowStyle>
-
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="File Name" Width="5*">
                             <DataGridTemplateColumn.CellTemplate>
