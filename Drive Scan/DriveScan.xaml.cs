@@ -27,6 +27,10 @@ namespace Drive_Scan
         //Viewmodel for scanned folders and paths
         public ObservableCollection<FolderInfo> scannedDrives;
 
+        //The folder in the DirectoryTree that the user has selected (Contents are shown in top right)
+        //Can also be changed from top right
+        public FolderInfo selectedFolder; 
+
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
 
         //Runs on window open
@@ -79,11 +83,127 @@ namespace Drive_Scan
 #endregion
 
         /// <summary>
+        /// Updates selectedFolder when the user double clicks on a new folder in the DirectoryTree
+        /// (So that the Folder Contents View can update)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnDirectoryTreeItemDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (DirectoryTree.SelectedItem != null)
+            {
+                //Get selected item from DirectoryTree
+                FileInfo item = DirectoryTree.SelectedItem as FileInfo;
+
+                //Get attributes for the selected item
+                FileAttributes attr = File.GetAttributes(item.path);
+
+                //If the selected item is a folder
+                if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                {
+                    //Set the selected Folder to the selected item
+                    selectedFolder = DirectoryTree.SelectedItem as FolderInfo;
+                    
+                    //Update the FolderContentsView
+                    FolderContentsView.ItemsSource = selectedFolder.children;
+                }
+
+                //This is a file
+                else
+                {
+                    try
+                    {
+                        //Open it in its associated application
+                        var p = new Process();
+                        p.StartInfo = new ProcessStartInfo(item.path)
+                        { 
+                            UseShellExecute = true
+                        };
+                        p.Start();
+                    }
+                    catch (Exception)
+                    {
+                        //User most likely attempted to open a file without an assigned application
+                        //So open it with the 'how do you want to open this file' dialog
+                        var p = new Process();
+                        p.StartInfo = new ProcessStartInfo(item.path)
+                        {
+                            WindowStyle = ProcessWindowStyle.Normal,
+                            Verb = "openas",
+                            UseShellExecute = true,
+                            ErrorDialog = true
+                        };
+                        p.Start();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates selectedFolder when the user double clicks on a new folder in the FolderContentsView
+        /// (So that the Folder Contents View can update)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnFolderContentsViewItemDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (FolderContentsView.SelectedItem != null)
+            {
+                //Get selected item from FolderContentsView
+                FileInfo item = FolderContentsView.SelectedItem as FileInfo;
+
+                //Get attributes for the selected item
+                FileAttributes attr = File.GetAttributes(item.path);
+
+                //If the selected item is a folder
+                if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                {
+                    //Set the selected Folder to the selected item
+                    selectedFolder = FolderContentsView.SelectedItem as FolderInfo;
+                    
+                    //Update the FolderContentsView
+                    FolderContentsView.ItemsSource = selectedFolder.children;
+                }
+
+                //This is a file
+                else
+                {
+                    try
+                    {
+                        //Open it in its associated application
+                        var p = new Process();
+                        p.StartInfo = new ProcessStartInfo(item.path)
+                        { 
+                            UseShellExecute = true
+                        };
+                        p.Start();
+                    }
+                    catch (Exception)
+                    {
+                        //User most likely attempted to open a file without an assigned application
+                        //So open it with the 'how do you want to open this file' dialog
+                        var p = new Process();
+                        p.StartInfo = new ProcessStartInfo(item.path)
+                        {
+                            WindowStyle = ProcessWindowStyle.Normal,
+                            Verb = "openas",
+                            UseShellExecute = true,
+                            ErrorDialog = true
+                        };
+                        p.Start();
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Scans a drive with the given name (Obtainable from SystemIO.DriveInfo)
         /// </summary>
         /// <param name="DriveName"></param>
         public async void ScanDrive(string DriveName)
         {
+            
             // Prompt the user for if they actually wanted to scan this drive
             MessageDialogResult res = await ((MetroWindow)(Application.Current.MainWindow)).ShowMessageAsync("Confirm", $"Are you sure you want to scan this drive? ({DriveName})", MessageDialogStyle.AffirmativeAndNegative);
             
@@ -109,7 +229,7 @@ namespace Drive_Scan
         }
 
         /// <summary>
-        /// Callback for ScanDrive()
+        /// Callback for ScanDrive() (is run once for every file and folder on the drive (including the root of the folder))
         /// </summary>
         /// <param name="foundFile"></param>
         /// <param name="isFirstFile"></param>
@@ -139,15 +259,13 @@ namespace Drive_Scan
             }
             else if (!foundFile.isFolder)
             {
-                
+                //It's a file so add it
                 _workingTree.Value.AddFileAtPath(foundFile.size, foundFile.path);
-                
             }
             else 
             {   
-                
-                _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path);
-                
+                //It's a folder so add it or update its size if it already exists
+                _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path); 
             }
         }
 
@@ -156,6 +274,8 @@ namespace Drive_Scan
         /// <summary>
         /// Update the hidden file config from the checkbox
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void UpdateHiddenFiles(object sender, RoutedEventArgs e)
         {
             ConfigHandler.updateValue("hidden", HiddenFiles.IsChecked ? "1" : "0");
@@ -164,6 +284,8 @@ namespace Drive_Scan
         /// <summary>
         /// Switch current theme to specified theme and update config
         /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
         public void ThemeSwitch(dynamic Sender, RoutedEventArgs e = null)
         {
             //Get the name of the object the operation originated from
@@ -185,8 +307,10 @@ namespace Drive_Scan
         }
 
         /// <summary>
-        /// Reboot as administrator
+        /// Reboot as Administrator
         /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
         public void GetAdmin(object Sender, RoutedEventArgs e)
         {
             //Get application exe location
