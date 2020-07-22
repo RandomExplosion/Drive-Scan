@@ -59,6 +59,9 @@ namespace Drive_Scan
         }
     } 
 
+    /// <summary>
+    /// Calculates the Used Drive Space of a Drive
+    /// </summary>
     public class UsedDriveSpaceConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
