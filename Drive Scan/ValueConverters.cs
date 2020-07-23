@@ -82,7 +82,7 @@ namespace Drive_Scan
     /// </summary>
     public class AssociatedIconConverter : IValueConverter
     {
-        // Load the error icon as a static variable so we only had to load it once not every time it is needed
+        // Load the error icon as a static variable so we only have to load it once not every time it is needed
         public static Icon ErrorIcon = Icon.FromHandle(((Bitmap)Image.FromFile(@"Resources\Error.ico")).GetHicon());
         public enum SourceType {File, Folder}
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
