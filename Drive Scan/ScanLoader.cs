@@ -68,7 +68,7 @@ namespace Drive_Scan
         internal static class StringCompressor
         {
             /// <summary>
-            /// Compresse a string
+            /// Compress a string
             /// </summary>
             public static string CompressString(string text)
             {
@@ -101,7 +101,7 @@ namespace Drive_Scan
             }
 
             /// <summary>
-            /// Decompresse a string
+            /// Decompress a string
             /// </summary>
             public static string DecompressString(string compressedText)
             {
