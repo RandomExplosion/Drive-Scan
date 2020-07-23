@@ -99,17 +99,21 @@ namespace Drive_Scan
                 //Get selected item from DirectoryTree
                 FileInfo item = DirectoryTree.SelectedItem as FileInfo;
 
-                //Get attributes for the selected item
-                FileAttributes attr = File.GetAttributes(item.path);
-
-                //If the selected item is a folder
-                if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                // Make sure the file actually exists
+                if (File.Exists(item.path) || Directory.Exists(item.path))
                 {
-                    //Set the selected Folder to the selected item
-                    selectedFolder = DirectoryTree.SelectedItem as FolderInfo;
-                    
-                    //Update the FolderContentsView
-                    FolderContentsView.ItemsSource = selectedFolder.children;
+                    //Get attributes for the selected item
+                    FileAttributes attr = File.GetAttributes(item.path);
+
+                    //If the selected item is a folder
+                    if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        //Set the selected Folder to the selected item
+                        selectedFolder = DirectoryTree.SelectedItem as FolderInfo;
+                        
+                        //Update the FolderContentsView
+                        FolderContentsView.ItemsSource = selectedFolder.children;
+                    }   
                 }
             }
         }
@@ -126,35 +130,39 @@ namespace Drive_Scan
                 //Get selected item from DirectoryTree
                 FileInfo item = DirectoryTree.SelectedItem as FileInfo;
 
-                //Get attributes for the selected item
-                FileAttributes attr = File.GetAttributes(item.path);
-
-                //If the selected item is a file
-                if((attr & FileAttributes.Directory) != FileAttributes.Directory)
+                // Make sure the file actually exists
+                if (File.Exists(item.path) || Directory.Exists(item.path))
                 {
-                    try
+                    //Get attributes for the selected item
+                    FileAttributes attr = File.GetAttributes(item.path);
+
+                    //If the selected item is a file
+                    if((attr & FileAttributes.Directory) != FileAttributes.Directory)
                     {
-                        //Open it in its associated application
-                        var p = new Process();
-                        p.StartInfo = new ProcessStartInfo(item.path)
-                        { 
-                            UseShellExecute = true
-                        };
-                        p.Start();
-                    }
-                    catch (Exception)
-                    {
-                        //User most likely attempted to open a file without an assigned application
-                        //So open it with the 'how do you want to open this file' dialog
-                        var p = new Process();
-                        p.StartInfo = new ProcessStartInfo(item.path)
+                        try
                         {
-                            WindowStyle = ProcessWindowStyle.Normal,
-                            Verb = "openas",
-                            UseShellExecute = true,
-                            ErrorDialog = true
-                        };
-                        p.Start();
+                            //Open it in its associated application
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            { 
+                                UseShellExecute = true
+                            };
+                            p.Start();
+                        }
+                        catch (Exception)
+                        {
+                            //User most likely attempted to open a file without an assigned application
+                            //So open it with the 'how do you want to open this file' dialog
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            {
+                                WindowStyle = ProcessWindowStyle.Normal,
+                                Verb = "openas",
+                                UseShellExecute = true,
+                                ErrorDialog = true
+                            };
+                            p.Start();
+                        }
                     }
                 }
             }
@@ -173,45 +181,49 @@ namespace Drive_Scan
                 //Get selected item from FolderContentsView
                 FileInfo item = FolderContentsView.SelectedItem as FileInfo;
 
-                //Get attributes for the selected item
-                FileAttributes attr = File.GetAttributes(item.path);
-
-                //If the selected item is a folder
-                if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                // Make sure the file actually exists
+                if (File.Exists(item.path) || Directory.Exists(item.path))
                 {
-                    //Set the selected Folder to the selected item
-                    selectedFolder = FolderContentsView.SelectedItem as FolderInfo;
-                    
-                    //Update the FolderContentsView
-                    FolderContentsView.ItemsSource = selectedFolder.children;
-                }
+                    //Get attributes for the selected item
+                    FileAttributes attr = File.GetAttributes(item.path);
 
-                //This is a file
-                else
-                {
-                    try
+                    //If the selected item is a folder
+                    if((attr & FileAttributes.Directory) == FileAttributes.Directory)
                     {
-                        //Open it in its associated application
-                        var p = new Process();
-                        p.StartInfo = new ProcessStartInfo(item.path)
-                        { 
-                            UseShellExecute = true
-                        };
-                        p.Start();
+                        //Set the selected Folder to the selected item
+                        selectedFolder = FolderContentsView.SelectedItem as FolderInfo;
+                        
+                        //Update the FolderContentsView
+                        FolderContentsView.ItemsSource = selectedFolder.children;
                     }
-                    catch (Exception)
+
+                    //This is a file
+                    else
                     {
-                        //User most likely attempted to open a file without an assigned application
-                        //So open it with the 'how do you want to open this file' dialog
-                        var p = new Process();
-                        p.StartInfo = new ProcessStartInfo(item.path)
+                        try
                         {
-                            WindowStyle = ProcessWindowStyle.Normal,
-                            Verb = "openas",
-                            UseShellExecute = true,
-                            ErrorDialog = true
-                        };
-                        p.Start();
+                            //Open it in its associated application
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            { 
+                                UseShellExecute = true
+                            };
+                            p.Start();
+                        }
+                        catch (Exception)
+                        {
+                            //User most likely attempted to open a file without an assigned application
+                            //So open it with the 'how do you want to open this file' dialog
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            {
+                                WindowStyle = ProcessWindowStyle.Normal,
+                                Verb = "openas",
+                                UseShellExecute = true,
+                                ErrorDialog = true
+                            };
+                            p.Start();
+                        }
                     }
                 }
             }

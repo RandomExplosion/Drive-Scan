@@ -82,6 +82,8 @@ namespace Drive_Scan
     /// </summary>
     public class AssociatedIconConverter : IValueConverter
     {
+        // Load the error icon as a static variable so we only had to load it once not every time it is needed
+        public static Icon ErrorIcon = Icon.FromHandle(((Bitmap)Image.FromFile(@"Resources\Error.ico")).GetHicon());
         public enum SourceType {File, Folder}
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -109,7 +111,17 @@ namespace Drive_Scan
                 path,
                 0, ref shinfo, (uint)Marshal.SizeOf(shinfo),
                 SHGFI_ICON | SHGFI_LARGEICON);
-            return System.Drawing.Icon.FromHandle(shinfo.hIcon);
+
+            // If getting the icon fails then the file likely does not exist
+            //  So we just use the default windows 10 error icon for the file
+            try
+            {
+                return System.Drawing.Icon.FromHandle(shinfo.hIcon);
+            }
+            catch
+            {
+                return ErrorIcon;
+            }
         }
 
         //Struct used by SHGetFileInfo function
