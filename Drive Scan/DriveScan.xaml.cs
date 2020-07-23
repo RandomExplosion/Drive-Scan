@@ -25,6 +25,8 @@ namespace Drive_Scan
         //Singleton Pattern
         static DriveScanWindow currentWindow;
 
+        // Create an instance of the scan loader so we can keep track of the files that we have found
+        //  So that when the user goes to save/load a scan it has all the files ready to go
         static ScanLoader currentScan = new ScanLoader();
 
         //Viewmodel for scanned folders and paths
@@ -359,7 +361,7 @@ namespace Drive_Scan
                 // Show the progress bar
                 ProgBar.Visibility = Visibility.Visible;
 
-                //Scan the drive asynchronously then add the drive tree to the TreeView
+                //Load the drives from the file asynchronously then add the drive tree to the TreeView
                 Task scanTask = Task.Run(() => {
                     // Load the data from the file
                     currentScan.Load(dlg.FileName);
