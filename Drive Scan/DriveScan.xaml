@@ -21,9 +21,9 @@
 
     <!-- Command Bindings -->
     <mah:MetroWindow.CommandBindings>
-        <!-- Open Command -->
+        <!-- "New" Command -->
         <CommandBinding
-            Command="ApplicationCommands.Open"
+            Command="ApplicationCommands.New"
             Executed="ScanDrive_CommandBinding_Executed"
             CanExecute="ScanDrive_CommandBinding_CanExecute"/>
     </mah:MetroWindow.CommandBindings>
@@ -136,7 +136,7 @@
 
 
                         <!-- Scan Button -->
-                        <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.Open">Scan This Drive</Button>
+                        <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.New">Scan This Drive</Button>
                         <ProgressBar Name="ProgBar" Grid.Row="0" Grid.Column="1" IsIndeterminate="True" Width="Auto" Visibility="Collapsed"/>
                     </Grid>
 
