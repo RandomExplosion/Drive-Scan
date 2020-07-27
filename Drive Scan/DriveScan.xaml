@@ -139,7 +139,7 @@
 
 
                         <!-- Scan Button -->
-                        <!-- <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" Padding="3" HorizontalAlignment="Left" Style="{DynamicResource MahApps.Styles.Button}" Command="ApplicationCommands.New">Scan This Drive</Button> -->
+                        <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" Padding="3" HorizontalAlignment="Left" Style="{DynamicResource MahApps.Styles.Button}" Command="ApplicationCommands.New">Scan This Drive</Button>
                         
                         <ProgressBar Name="ProgBar" Grid.Row="0" Grid.Column="1" IsIndeterminate="True" Width="Auto" Visibility="Collapsed" Style="{DynamicResource MahApps.Styles.ProgressBar}"/>
                         
