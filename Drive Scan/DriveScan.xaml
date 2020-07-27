@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:Drive_Scan"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d" 
         WindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}" 
         NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
@@ -132,12 +134,24 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="25"/>
                         </Grid.ColumnDefinitions>
 
 
                         <!-- Scan Button -->
-                        <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Left" Style="{StaticResource MahApps.Styles.Button}" Command="ApplicationCommands.New">Scan This Drive</Button>
-                        <ProgressBar Name="ProgBar" Grid.Row="0" Grid.Column="1" IsIndeterminate="True" Width="Auto" Visibility="Collapsed"/>
+                        <!-- <Button Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" Padding="3" HorizontalAlignment="Left" Style="{DynamicResource MahApps.Styles.Button}" Command="ApplicationCommands.New">Scan This Drive</Button> -->
+                        
+                        <ProgressBar Name="ProgBar" Grid.Row="0" Grid.Column="1" IsIndeterminate="True" Width="Auto" Visibility="Collapsed" Style="{DynamicResource MahApps.Styles.ProgressBar}"/>
+                        
+                        <!-- Refresh List Button -->
+                        <Button Width="Auto" Grid.Row="0" Grid.Column="2" Height="Auto" Padding="3"
+                            Style="{DynamicResource MahApps.Styles.Button}" Click="RefreshDrives">
+                            <Button.ContentTemplate>
+                                <DataTemplate>
+                                    <iconPacks:PackIconModern Width="20" Height="20" Kind="Refresh" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </Button.ContentTemplate>
+                        </Button>
                     </Grid>
 
                     <!-- Drive List -->
@@ -147,6 +161,11 @@
                             <!-- Used Drive Space Arithmetic -->
                             <local:UsedDriveSpaceConverter x:Key="UsedDriveSpaceConverter" />
                         </DataGrid.Resources>
+                        
+                        <!-- Double CLick Scanning -->
+                        <DataGrid.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="ApplicationCommands.New" />
+                        </DataGrid.InputBindings>
 
                         <DataGrid.Columns>
                             <!-- Drive Volume Labels -->
