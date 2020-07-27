@@ -34,7 +34,7 @@ namespace Drive_Scan
 
         //The folder in the DirectoryTree that the user has selected (Contents are shown in top right)
         //Can also be changed from top right
-        public FolderInfo selectedFolder; 
+        public FolderInfo selectedFolder;
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
 
@@ -48,7 +48,7 @@ namespace Drive_Scan
             currentWindow = this;
 
             //Populate Drive List
-            DriveList.ItemsSource = DriveInfo.GetDrives();
+            RefreshDrives(this, null);
 
             //Init scanned Drives list
             scannedDrives = new ObservableCollection<FolderInfo>();
@@ -87,6 +87,7 @@ namespace Drive_Scan
         }
 #endregion
 
+#region Mouse Events
         /// <summary>
         /// Updates selectedFolder when the user clicks on a new folder in the DirectoryTree
         /// (So that the Folder Contents View can update)
@@ -112,10 +113,10 @@ namespace Drive_Scan
                     {
                         //Set the selected Folder to the selected item
                         selectedFolder = DirectoryTree.SelectedItem as FolderInfo;
-                        
+
                         //Update the FolderContentsView
                         FolderContentsView.ItemsSource = selectedFolder.children;
-                    }   
+                    }
                 }
             }
         }
@@ -146,7 +147,7 @@ namespace Drive_Scan
                             //Open it in its associated application
                             var p = new Process();
                             p.StartInfo = new ProcessStartInfo(item.path)
-                            { 
+                            {
                                 UseShellExecute = true
                             };
                             p.Start();
@@ -194,7 +195,7 @@ namespace Drive_Scan
                     {
                         //Set the selected Folder to the selected item
                         selectedFolder = FolderContentsView.SelectedItem as FolderInfo;
-                        
+
                         //Update the FolderContentsView
                         FolderContentsView.ItemsSource = selectedFolder.children;
                     }
@@ -207,7 +208,7 @@ namespace Drive_Scan
                             //Open it in its associated application
                             var p = new Process();
                             p.StartInfo = new ProcessStartInfo(item.path)
-                            { 
+                            {
                                 UseShellExecute = true
                             };
                             p.Start();
@@ -231,39 +232,64 @@ namespace Drive_Scan
             }
         }
 
+#endregion
+
+        public void RefreshDrives(object sender, RoutedEventArgs e)
+        {
+            DriveList.ItemsSource = DriveInfo.GetDrives();
+        }
 
         /// <summary>
         /// Scans a drive with the given name (Obtainable from SystemIO.DriveInfo)
+        /// Should only be run from the ui by double clicking on a drive
         /// </summary>
-        /// <param name="DriveName"></param>
         public async void ScanDrive(string DriveName)
         {
-            
-            // Prompt the user for if they actually wanted to scan this drive
-            MessageDialogResult res = await ((MetroWindow)(Application.Current.MainWindow)).ShowMessageAsync("Confirm", $"Are you sure you want to scan this drive? ({DriveName})", MessageDialogStyle.AffirmativeAndNegative);
-            
-            // If they say yes
-            if (res == MessageDialogResult.Affirmative) 
-            { 
-                DriveInfo drive = DriveList.SelectedItem as DriveInfo;
-                Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
-                //Show the Bar
-                ProgBar.Visibility = Visibility.Visible;
-                //Scan the drive asynchronously then add the drive tree to the TreeView
-                Task scanTask = Task.Run(() => {
-                    Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
-                        // Add the file to the scan
-                        currentScan.files.Add(file);
-                        OnFileFound(file);
+            try
+            {
+
+                // Prompt the user for if they actually wanted to scan this drive
+                MessageDialogResult res = await ((MetroWindow)(Application.Current.MainWindow)).ShowMessageAsync("Confirm", $"Are you sure you want to scan this drive? ({DriveName})", MessageDialogStyle.AffirmativeAndNegative);
+
+                // If they say yes
+                if (res == MessageDialogResult.Affirmative)
+                {
+                    DriveInfo drive = DriveList.SelectedItem as DriveInfo;
+                    Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
+                    //Show the Bar
+                    ProgBar.Visibility = Visibility.Visible;
+                    //Scan the drive asynchronously then add the drive tree to the TreeView
+                    Task scanTask = Task.Run(() => {
+                        Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
+                            // Add the file to the scan
+                            currentScan.files.Add(file);
+                            OnFileFound(file);
+                        });
+
+                        //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            //Remove Records of this drive if there are any
+                            foreach (FolderInfo drive in scannedDrives)
+                            {
+                                if (drive.name == _workingTree.Value.name)
+                                {
+                                    scannedDrives.Remove(drive);
+                                }
+                            }
+
+                            scannedDrives.Add(_workingTree.Value);  //Add drive to tree
+                            ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
+
+                        });
                     });
+                }
                 
-                    //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
-                    Application.Current.Dispatcher.Invoke(() => 
-                    {
-                        scannedDrives.Add(_workingTree.Value);  //Add drive to tree
-                        ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
-                    });
-                });
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e);
+                RefreshDrives(this, null);
             }
         }
 
@@ -280,7 +306,7 @@ namespace Drive_Scan
             {
                 //If this is the second time this drive's root has been retuned (has the final size)
                 if (foundFile.size > 0)
-                {   
+                {
                     //Update the size
                     _workingTree.Value.size = foundFile.size;
                 }
@@ -289,9 +315,9 @@ namespace Drive_Scan
 
                     //Initialise the working tree
                     _workingTree.Value = new FolderInfo(foundFile.size,
-                    //This part is also jank. it finds the last string in an array of strings that isn't null 
+                    //This part is also jank. it finds the last string in an array of strings that isn't null
                     foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
-                    
+
                 }
             }
             else if (!foundFile.isFolder)
@@ -299,10 +325,10 @@ namespace Drive_Scan
                 //It's a file so add it
                 _workingTree.Value.AddFileAtPath(foundFile.size, foundFile.path);
             }
-            else 
-            {   
+            else
+            {
                 //It's a folder so add it or update its size if it already exists
-                _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path); 
+                _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path);
             }
         }
 
@@ -368,9 +394,9 @@ namespace Drive_Scan
 
                     // Run the onfilefound function for each of the files found from the scanner load
                     currentScan.files.ForEach(OnFileFound);
-                
+
                     //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
-                    Application.Current.Dispatcher.Invoke(() => 
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
                         scannedDrives.Add(_workingTree.Value);  //Add drive to tree
                         ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
