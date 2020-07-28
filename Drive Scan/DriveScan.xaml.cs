@@ -260,6 +260,18 @@ namespace Drive_Scan
                     ProgBar.Visibility = Visibility.Visible;
                     //Scan the drive asynchronously then add the drive tree to the TreeView
                     Task scanTask = Task.Run(() => {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            //Remove Records of this drive if there are any
+                            for (int i = 0; i < scannedDrives.Count; i++)
+                            {
+                                if (scannedDrives[i].name == drive.Name.Split("\\")[0])
+                                {
+                                    scannedDrives.Remove(scannedDrives[i]);
+                                }
+                            }
+                        });
+
                         Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
                             // Add the file to the scan
                             currentScan.files.Add(file);
@@ -269,18 +281,8 @@ namespace Drive_Scan
                         //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            //Remove Records of this drive if there are any
-                            foreach (FolderInfo drive in scannedDrives)
-                            {
-                                if (drive.name == _workingTree.Value.name)
-                                {
-                                    scannedDrives.Remove(drive);
-                                }
-                            }
-
                             scannedDrives.Add(_workingTree.Value);  //Add drive to tree
                             ProgBar.Visibility = Visibility.Hidden; //Hide Progress Bar
-
                         });
                     });
                 }
@@ -391,6 +393,18 @@ namespace Drive_Scan
                 Task scanTask = Task.Run(() => {
                     // Load the data from the file
                     currentScan.Load(dlg.FileName);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            //Remove Records of this drive if there are any
+                            for (int i = 0; i < scannedDrives.Count; i++)
+                            {
+                                if (scannedDrives[i].name == currentScan.files[0].path.Split("\\")[currentScan.files[0].path.Split("\\").Length-2])
+                                {
+                                    scannedDrives.Remove(scannedDrives[i]);
+                                }
+                            }
+                        });
 
                     // Run the onfilefound function for each of the files found from the scanner load
                     currentScan.files.ForEach(OnFileFound);
