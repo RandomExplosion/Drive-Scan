@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <StartupObject>Drive_Scan.App</StartupObject>
     <SignAssembly>false</SignAssembly>
+    <ApplicationIcon>Resources\DriveFind.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0821"/>
