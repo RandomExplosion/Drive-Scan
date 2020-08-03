@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: windows-latest
     strategy:
       matrix:
         dotnet: [ "3.1.x" ]
@@ -19,4 +19,4 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
-      - run: dotnet build Drive\ Scan
+      - run: dotnet build "Drive Scan"
