@@ -34,7 +34,7 @@ namespace Drive_Scan
 
         //The folder in the DirectoryTree that the user has selected (Contents are shown in top right)
         //Can also be changed from top right
-        public FolderInfo selectedFolder;
+        public FolderInfo selectedFolder { get; set; }
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
 

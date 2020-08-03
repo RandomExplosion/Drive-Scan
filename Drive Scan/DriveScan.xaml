@@ -19,6 +19,7 @@
         <!-- ValueConverter to convert file sizes from bytes to the appropriate units -->
         <local:FormatSizeConverter x:Key="FormatSizeConverter"/>
         <local:AssociatedIconConverter x:Key="AssociatedIconConverter"/>
+        <local:PercentageConverter x:Key="PercentageConverter"/>
     </mah:MetroWindow.Resources>
 
     <!-- Command Bindings -->
@@ -228,9 +229,11 @@
                 <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
                 <!-- Subfolder View -->
-                <DataGrid Grid.Row="0" x:Name="FolderContentsView" AutoGenerateColumns="False" MouseDoubleClick="OnFolderContentsViewItemDoubleClick">
+                <DataGrid Grid.Row="0" x:Name="FolderContentsView" AutoGenerateColumns="False" MouseDoubleClick="OnFolderContentsViewItemDoubleClick" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
 
                     <DataGrid.Columns>
+
+                        <!-- File Name and Icon -->
                         <DataGridTemplateColumn Header="File Name" Width="5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -243,7 +246,37 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- File Size -->
                         <DataGridTextColumn Header="Size" Width="1*" Binding="{Binding Path=size, Converter={StaticResource FormatSizeConverter}}"/>
+                        
+                        <!-- Percentage of parent folder -->
+                        <DataGridTemplateColumn Header="Percent" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Width="Auto" Height="Auto" VerticalAlignment="Stretch">
+                                        <!-- Percentage Bar -->
+                                        <ProgressBar Style="{DynamicResource MahApps.Styles.ProgressBar}" Minimum="0" Maximum="100" Width="Auto" VerticalAlignment="Stretch">
+                                            <ProgressBar.Value>
+                                                <MultiBinding Converter="{StaticResource PercentageConverter}">
+                                                    <Binding Path="size"/>
+                                                    <Binding Path="selectedFolder.size" RelativeSource="{RelativeSource AncestorType={x:Type mah:MetroWindow}}"/>
+                                                </MultiBinding>
+                                            </ProgressBar.Value>
+                                        </ProgressBar>
+
+                                        <!-- Percentage Text -->
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Width="Auto" Height="Auto" Style="{DynamicResource MahApps.Styles.TextBlock}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource PercentageConverter}">
+                                                        <Binding Path="size"/>
+                                                        <Binding Path="selectedFolder.size" RelativeSource="{RelativeSource AncestorType={x:Type mah:MetroWindow}}"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 

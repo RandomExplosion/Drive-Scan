@@ -146,4 +146,52 @@ namespace Drive_Scan
 
         #endregion
     }
+
+    /// <summary>
+    /// Does percentage calculations with databinding and parameters
+    /// </summary>
+    public class PercentageConverter : IMultiValueConverter
+    {
+        /// <summary>
+        /// Runs Conversion
+        /// </summary>
+        /// <param name="value"> Format: [numerator, converter]</param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length == 2)
+            {
+                try
+                {
+                    double num = System.Convert.ToDouble((Int64)values[0]);
+                    double den = System.Convert.ToDouble((Int64)values[1]);
+
+                    double perc = Math.Round(num/den*100, 2);
+
+                    //If it wants a string
+                    if (targetType == typeof(string))
+                    {
+                        return perc.ToString();
+                    }
+                    else return perc; //Otherwise return the double
+                }
+                catch (System.Exception)
+                {
+                    throw;
+                }
+            }
+            else 
+            {
+                throw new ArgumentException("Value or Paramater is null");
+            }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }
