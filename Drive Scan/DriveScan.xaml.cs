@@ -13,6 +13,7 @@ using System.Diagnostics;
 using Drive_Scan.Config;
 using System.Collections.Generic;
 using MahApps.Metro.Controls.Dialogs;
+using LiveCharts;
 
 namespace Drive_Scan
 {
@@ -38,6 +39,8 @@ namespace Drive_Scan
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
 
+        public Func<ChartPoint, string> PointLabel { get; set; }
+
         //Runs on window open
         public DriveScanWindow()
         {
@@ -49,6 +52,10 @@ namespace Drive_Scan
 
             //Populate Drive List
             RefreshDrives(this, null);
+
+            //Generate Label Point
+            PointLabel = chartPoint =>
+                string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
 
             //Init scanned Drives list
             scannedDrives = new ObservableCollection<FolderInfo>();

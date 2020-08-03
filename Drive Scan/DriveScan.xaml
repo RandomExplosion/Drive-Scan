@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Drive_Scan"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d" 
@@ -13,6 +14,7 @@
         NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
         BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/DriveFind.ico"
         Height="Auto" Width="Auto">
+        
 
     <!-- Window Resources: Converters, Icons etc -->
     <mah:MetroWindow.Resources>
@@ -279,6 +281,14 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <!-- Pie Chart -->
+                <lvc:PieChart x:Name="SelectedFolderPie" Grid.Row="1" Hoverable="True" DataTooltip="{x:Null}">
+                    <lvc:PieChart.Series>
+                        <lvc:PieSeries Title="{Binding selectedFolder, Path=children[0].name}" LabelPoint="{Binding PointLabel}" 
+                            Values="{Binding selectedFolder, Path=children[0].size}" DataLabels="True"/>
+                    </lvc:PieChart.Series>
+                </lvc:PieChart>
 
             </Grid>
         </Grid>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Generic;
+using LiveCharts;
 
 namespace Drive_Scan
 {
@@ -171,5 +172,10 @@ namespace Drive_Scan
             this.splitPath = path.Split("\\");
             this.name = this.splitPath.Last();
         }
+    }
+
+    public class SubfolderPieData<T> : ChartValues<T>
+    {
+        
     }
 }
