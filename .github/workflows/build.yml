@@ -6,9 +6,17 @@ on:
   pull_request:
     branches: [ add/workflows ]
 
-steps:
-- uses: actions/checkout@main
-- uses: actions/setup-dotnet@v1
-  with:
-    dotnet-version: '3.1.x' 
-- run: dotnet build Drive\ Scan
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        dotnet: [ "3.1.x" ]
+    name: Dotnet ${{ matrix.dotnet }} Build
+    steps:
+      - uses: actions/checkout@main
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - run: dotnet build Drive\ Scan
