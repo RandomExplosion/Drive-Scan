@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 5
     strategy:
       matrix:
         dotnet: [ "3.1.x" ]
