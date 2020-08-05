@@ -228,7 +228,8 @@
                     <RowDefinition x:Name="ChartView" Height="1*"/>
                 </Grid.RowDefinitions>
                 <!-- Grid Splitter Between Top Left and Bottom Left -->
-                <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
+                <!-- Note: Has name so the colour can be retrieved (jank i know) -->
+                <GridSplitter x:Name="TLBLSplitter" Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
                 <!-- Subfolder View -->
                 <DataGrid Grid.Row="0" x:Name="FolderContentsView" AutoGenerateColumns="False" MouseDoubleClick="OnFolderContentsViewItemDoubleClick" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
@@ -283,11 +284,10 @@
                 </DataGrid>
 
                 <!-- Pie Chart -->
-                <lvc:PieChart x:Name="SelectedFolderPie" Grid.Row="1" Hoverable="True" DataTooltip="{x:Null}">
-                    <lvc:PieChart.Series>
-                        <lvc:PieSeries Title="{Binding selectedFolder, Path=children[0].name}" LabelPoint="{Binding PointLabel}" 
-                            Values="{Binding selectedFolder, Path=children[0].size}" DataLabels="True"/>
-                    </lvc:PieChart.Series>
+                <lvc:PieChart x:Name="SelectedFolderPie" Grid.Row="2" Hoverable="True" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataClick="OnSelectedPieDataClick">
+                    <lvc:PieChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="OnlySender" Background="Gray"/>
+                    </lvc:PieChart.DataTooltip>
                 </lvc:PieChart>
 
             </Grid>
