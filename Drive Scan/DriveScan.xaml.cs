@@ -13,6 +13,9 @@ using System.Diagnostics;
 using Drive_Scan.Config;
 using System.Collections.Generic;
 using MahApps.Metro.Controls.Dialogs;
+using LiveCharts.Wpf;
+using LiveCharts;
+using ControlzEx.Theming;
 
 namespace Drive_Scan
 {
@@ -38,17 +41,30 @@ namespace Drive_Scan
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
 
+        public Func<ChartPoint, string> PointLabel { get; set; }
+        System.Windows.Data.Binding pointLabelBinding = new System.Windows.Data.Binding("LabelPoint");
+
         //Runs on window open
         public DriveScanWindow()
         {
             InitializeComponent();
+
+            //Get selected theme from config handler
             ThemeSwitch(ConfigHandler.readValue("theme"));
             HiddenFiles.IsChecked = Convert.ToBoolean(Convert.ToInt16(ConfigHandler.readValue("hidden")));
 
+            //Singleton Init
             currentWindow = this;
 
             //Populate Drive List
             RefreshDrives(this, null);
+
+            //Define Label Formatting
+            PointLabel = chartPoint =>
+                FormatSizeConverter.Convert((long)chartPoint.Y).ToString();
+
+            //Bind binding to labelpoint
+            pointLabelBinding.Source = PointLabel;
 
             //Init scanned Drives list
             scannedDrives = new ObservableCollection<FolderInfo>();
@@ -90,7 +106,7 @@ namespace Drive_Scan
 #region Mouse Events
         /// <summary>
         /// Updates selectedFolder when the user clicks on a new folder in the DirectoryTree
-        /// (So that the Folder Contents View can update)
+        /// (So that the Folder Contents View and Pie Chart can update)
         /// This is different to the behaviour in FolderContentsView where the user must double click!
         /// </summary>
         /// <param name="sender"></param>
@@ -116,13 +132,16 @@ namespace Drive_Scan
 
                         //Update the FolderContentsView
                         FolderContentsView.ItemsSource = selectedFolder.children;
+
+                        //Refresh Pie
+                        UpdateSelectedFolderPie();
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Opens File if the user double clicks on it in the DirectoryTree
+        /// Opens FILE if the user double clicks on it in the DirectoryTree
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -198,6 +217,9 @@ namespace Drive_Scan
 
                         //Update the FolderContentsView
                         FolderContentsView.ItemsSource = selectedFolder.children;
+
+                        //Refresh Pie
+                        UpdateSelectedFolderPie();
                     }
 
                     //This is a file
@@ -234,10 +256,128 @@ namespace Drive_Scan
 
 #endregion
 
+        /// <summary>
+        /// Update the drive list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void RefreshDrives(object sender, RoutedEventArgs e)
         {
             DriveList.ItemsSource = DriveInfo.GetDrives();
         }
+
+#region Pie Chart
+        /// <summary>
+        /// Updates Selected Folder Pie
+        /// </summary>
+        public void UpdateSelectedFolderPie()
+        {
+            //Clear the Pie
+            SelectedFolderPie.Series = new SeriesCollection();
+
+            //Sort children and convert to list
+            List<FileInfo> sortedItemInfo = selectedFolder.children.OrderBy(x => x.size).ToList();
+            if (sortedItemInfo.Count > 0)
+            {
+                long sizeOfSlices = 0;
+                //Add top 5
+                for (int i = 0; i < sortedItemInfo.Count && i < 5; i++)
+                {
+                    SelectedFolderPie.Series.Add( new PieSeries
+                    {
+                        Title = sortedItemInfo[i].name,
+                        Values = new ChartValues<long> {sortedItemInfo[i].size},
+                        Stroke = TLBLSplitter.Background,
+                        LabelPoint = PointLabel
+                    });
+
+                    //Add to size of displayed slices
+                    sizeOfSlices += sortedItemInfo[i].size;
+                }
+                //If there are more items
+                if (sortedItemInfo.Count > 5)
+                {
+                    //Represent them all with one slice
+                    SelectedFolderPie.Series.Add( new PieSeries
+                    {
+                        Title = "Others",
+                        Values = new ChartValues<long> {selectedFolder.size - sizeOfSlices},
+                        Stroke = TLBLSplitter.Background,
+                        LabelPoint = PointLabel
+                    });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates selectedFolder when the user clicks on a slice in SelectedFolderPie
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="p"></param>
+        public void OnSelectedPieDataClick(object sender, ChartPoint point)
+        {
+            
+            try
+            {
+                //Get selected item from DirectoryTree
+                FileInfo item = selectedFolder.children.Where(x => x.name == point.SeriesView.Title).First() as FileInfo;
+
+                // Make sure the file actually exists
+                if (File.Exists(item.path) || Directory.Exists(item.path))
+                {
+                    //Get attributes for the selected item
+                    FileAttributes attr = File.GetAttributes(item.path);
+
+                    //If the selected item is a folder
+                    if((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        //Set the selected Folder to the selected item
+                        selectedFolder = selectedFolder.children.Where(x => x.name == point.SeriesView.Title).First() as FolderInfo;
+
+                        //Update the FolderContentsView
+                        FolderContentsView.ItemsSource = selectedFolder.children;
+
+                        //Refresh Pie
+                        UpdateSelectedFolderPie();
+                    }
+                    //If the selected item is a file
+                    else if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
+                    {
+                        try
+                        {
+                            //Open it in its associated application
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            {
+                                UseShellExecute = true
+                            };
+                            p.Start();
+                        }
+                        catch (System.ComponentModel.Win32Exception)
+                        {
+                            //User most likely attempted to open a file without an assigned application
+                            //So open it with the 'how do you want to open this file' dialog
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(item.path)
+                            {
+                                WindowStyle = ProcessWindowStyle.Normal,
+                                Verb = "openas",
+                                UseShellExecute = true,
+                                ErrorDialog = true
+                            };
+                            p.Start();
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+        }
+
+#endregion
 
         /// <summary>
         /// Scans a drive with the given name (Obtainable from SystemIO.DriveInfo)

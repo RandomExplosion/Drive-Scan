@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Drive_Scan"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d" 
@@ -13,6 +14,7 @@
         NonActiveWindowTitleBrush="{DynamicResource MahApps.Brushes.ThemeBackground}"
         BorderThickness="0" WindowStartupLocation="CenterScreen" Icon="Resources/DriveFind.ico"
         Height="Auto" Width="Auto">
+        
 
     <!-- Window Resources: Converters, Icons etc -->
     <mah:MetroWindow.Resources>
@@ -226,7 +228,8 @@
                     <RowDefinition x:Name="ChartView" Height="1*"/>
                 </Grid.RowDefinitions>
                 <!-- Grid Splitter Between Top Left and Bottom Left -->
-                <GridSplitter Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
+                <!-- Note: Has name so the colour can be retrieved (jank i know) -->
+                <GridSplitter x:Name="TLBLSplitter" Grid.Row="1" ShowsPreview="False" VerticalAlignment="Stretch" Style="{DynamicResource MahApps.Styles.GridSplitter }" Height="5"/>
 
                 <!-- Subfolder View -->
                 <DataGrid Grid.Row="0" x:Name="FolderContentsView" AutoGenerateColumns="False" MouseDoubleClick="OnFolderContentsViewItemDoubleClick" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
@@ -279,6 +282,13 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <!-- Pie Chart -->
+                <lvc:PieChart x:Name="SelectedFolderPie" Grid.Row="2" Hoverable="True" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataClick="OnSelectedPieDataClick">
+                    <lvc:PieChart.DataTooltip>
+                        <lvc:DefaultTooltip SelectionMode="OnlySender" Background="Gray"/>
+                    </lvc:PieChart.DataTooltip>
+                </lvc:PieChart>
 
             </Grid>
         </Grid>
