@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Collections.Generic;
+using DrWPF.Windows.Data;
 using LiveCharts;
 
 namespace Drive_Scan
@@ -15,7 +15,7 @@ namespace Drive_Scan
     /// </summary>
     public class FolderInfo : FileInfo
     {
-        public ObservableCollection<FileInfo> children { get; set; }
+        public ObservableDictionary<string, FileInfo> children { get; set; }
         /// <summary>
         /// Constructor
         /// </summary>
@@ -23,44 +23,12 @@ namespace Drive_Scan
         /// <param name="_path"></param>
         public FolderInfo(long _size, string _path) : base(_size, _path)
         {
-            this.children = new ObservableCollection<FileInfo>();
+            this.children = new ObservableDictionary<string, FileInfo>();
 
             this.path = _path;
             this.size = _size;
             this.splitPath = path.Split("\\");
             this.name = this.splitPath.Last();
-        }
-
-        /// <summary>
-        /// Not implimented
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        // public void CreateSubFolder(long size, string path)
-        // {
-        //     children.Add(new FolderInfo(size, path));
-        // }
-
-        ///<summary>
-        ///Gets a child of this folder by its name
-        ///<summary>
-        public FolderInfo GetSubFolderByName(string _name)
-        {
-        
-            //Find that folder
-            FolderInfo foundFolder = null;
-            foreach (FileInfo child in children)
-            {
-                if(child.name == _name)
-                {
-                    if(child.GetType().GetProperty("children") != null)
-                    {
-                        foundFolder = child as FolderInfo;
-                    }
-                }
-            }
-            
-            return foundFolder;
         }
 
         // public FileInfo GetFileByName(string name)
@@ -84,24 +52,15 @@ namespace Drive_Scan
             //For every chunk of the path except the last entry (filename) and first entry (root)
             for (int i = 1; i < newFile.splitPath.Length-1; i++)
             {
-                
-                //If the folder has already been created then go to that and move on to the next part of the path
-                if (currentFolder.GetSubFolderByName(newFile.splitPath[i]) != null)
+                //If there is data on this folder already
+                if (currentFolder.children.ContainsKey(newFile.splitPath[i]) && currentFolder.children[newFile.splitPath[i]].GetType().GetProperty("children") != null)
                 {
-                    currentFolder = currentFolder.GetSubFolderByName(newFile.splitPath[i]);
-                    continue;
+                    currentFolder = currentFolder.children[newFile.splitPath[i]] as FolderInfo;
                 }
-                else
-                {
-                    //Create the folder
-                    currentFolder.children.Add(new FolderInfo(0, $"{currentFolder.path}\\{newFile.splitPath[i]}"));
-                    continue;
-                }
-            
             }
 
             //Add the file to the folder
-                currentFolder.children.Add(newFile);
+            currentFolder.children.Add(newFile.name, newFile);
 
             return newFile;
         }
@@ -118,34 +77,28 @@ namespace Drive_Scan
             {
                 
                 //If the folder has already been created then go to that and move on to the next part of the path
-                if (currentFolder.GetSubFolderByName(updatedFolderInfo.splitPath[i]) != null)
+                if (currentFolder.children.ContainsKey(updatedFolderInfo.splitPath[i]) && currentFolder.children[updatedFolderInfo.splitPath[i]].GetType().GetProperty("children") != null)
                 {
-                    currentFolder = currentFolder.GetSubFolderByName(updatedFolderInfo.splitPath[i]);
+                    currentFolder = currentFolder.children[updatedFolderInfo.splitPath[i]] as FolderInfo;
                     continue;
                 }
                 else
                 {
                     //Create the folder
-                    currentFolder.children.Add(new FolderInfo(0, currentFolder.path + updatedFolderInfo.splitPath[i]));
+                    currentFolder.children.Add(updatedFolderInfo.splitPath[i], new FolderInfo(0, currentFolder.path + updatedFolderInfo.splitPath[i]));
                     continue;
                 }
             }
 
-            // if (currentFolder.subfolders.Contains())
-            // {
-                
-            // }
-
-            FolderInfo existingFolder = currentFolder.GetSubFolderByName(updatedFolderInfo.name);
-
-            //Update the folder's size if it isn't there
-            if (existingFolder != null)
+            //If the folder already exists update its size
+            if (currentFolder.children.ContainsKey(updatedFolderInfo.name) && currentFolder.children[updatedFolderInfo.name].GetType().GetProperty("children") != null)
             {
-                existingFolder.size = updatedFolderInfo.size;
+                ((FolderInfo)currentFolder.children[updatedFolderInfo.name]).size = updatedFolderInfo.size;
             }
-            else    //Add the folder if it isn't there for some reason
+            //Add the folder if it isn't already there
+            else
             {
-                currentFolder.children.Add(updatedFolderInfo);
+                currentFolder.children.Add(updatedFolderInfo.name, updatedFolderInfo);
             }
 
             return updatedFolderInfo;

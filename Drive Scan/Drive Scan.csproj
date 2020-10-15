@@ -9,7 +9,7 @@
     <ApplicationIcon>Resources\DriveFind.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0821"/>
+    <PackageReference Include="MahApps.Metro" Version="2.2.0"/>
     <PackageReference Include="System.Drawing.Common" Version="4.7.0"/>
     <PackageReference Include="MahApps.Metro.IconPacks.Modern" Version="4.3.0"/>
     <PackageReference Include="LiveCharts.Wpf.NetCore3" Version="0.9.7"/>

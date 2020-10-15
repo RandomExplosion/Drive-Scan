@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using MahApps.Metro.Controls.Dialogs;
 using LiveCharts.Wpf;
 using LiveCharts;
-using ControlzEx.Theming;
+using DrWPF.Windows.Data;
 
 namespace Drive_Scan
 {
@@ -116,7 +116,7 @@ namespace Drive_Scan
             if (DirectoryTree.SelectedItem != null)
             {
                 //Get selected item from DirectoryTree
-                FileInfo item = DirectoryTree.SelectedItem as FileInfo;
+                FileInfo item = DirectoryTree.SelectedItem as FolderInfo;
 
                 // Make sure the file actually exists
                 if (File.Exists(item.path) || Directory.Exists(item.path))
@@ -131,7 +131,7 @@ namespace Drive_Scan
                         selectedFolder = DirectoryTree.SelectedItem as FolderInfo;
 
                         //Update the FolderContentsView
-                        FolderContentsView.ItemsSource = selectedFolder.children;
+                        FolderContentsView.ItemsSource = selectedFolder.children.Values;
 
                         //Refresh Pie
                         UpdateSelectedFolderPie();
@@ -276,7 +276,7 @@ namespace Drive_Scan
             SelectedFolderPie.Series = new SeriesCollection();
 
             //Sort children and convert to list
-            List<FileInfo> sortedItemInfo = selectedFolder.children.OrderBy(x => x.size).ToList();
+            List<FileInfo> sortedItemInfo = selectedFolder.children.Values.OrderBy(x => x.size).ToList();
             if (sortedItemInfo.Count > 0)
             {
                 long sizeOfSlices = 0;
@@ -320,7 +320,7 @@ namespace Drive_Scan
             try
             {
                 //Get selected item from DirectoryTree
-                FileInfo item = selectedFolder.children.Where(x => x.name == point.SeriesView.Title).First() as FileInfo;
+                FileInfo item = selectedFolder.children[point.SeriesView.Title];
 
                 // Make sure the file actually exists
                 if (File.Exists(item.path) || Directory.Exists(item.path))
@@ -332,7 +332,7 @@ namespace Drive_Scan
                     if((attr & FileAttributes.Directory) == FileAttributes.Directory)
                     {
                         //Set the selected Folder to the selected item
-                        selectedFolder = selectedFolder.children.Where(x => x.name == point.SeriesView.Title).First() as FolderInfo;
+                        selectedFolder = selectedFolder.children[point.SeriesView.Title] as FolderInfo;
 
                         //Update the FolderContentsView
                         FolderContentsView.ItemsSource = selectedFolder.children;
