@@ -423,15 +423,6 @@ namespace Drive_Scan
                             // Add the file to the scan
                             currentScan.files.Add(file);
                             OnFileFound(file);
-
-                            //Update the progress bar if able to
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                if (_workingTree.Value.size > 0)
-                                {
-                                    ProgBar.Value = _workingTree.Value.size/_workingDriveSize.Value;
-                                }
-                            });
                         });
 
                         //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
@@ -488,6 +479,15 @@ namespace Drive_Scan
                 //It's a folder so add it or update its size if it already exists
                 _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path);
             }
+            
+            //Update the progress bar if able to
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (_workingTree.Value.size > 0)
+                {
+                    ProgBar.Value = _workingTree.Value.size/_workingDriveSize.Value;
+                }
+            });
         }
 
         #region Ribbon Buttons
