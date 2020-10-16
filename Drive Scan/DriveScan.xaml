@@ -105,7 +105,7 @@
                         </Style> -->
 
                         <!-- Folder Template -->
-                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children}">
+                        <HierarchicalDataTemplate DataType="{x:Type local:FolderInfo}" ItemsSource="{Binding Path=children.Values}">
                             <!--<HierarchicalDataTemplate.ItemTemplate>-->
                             <DockPanel>
                                 <Image Source="{Binding path, Converter={StaticResource AssociatedIconConverter}}" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="Fant" Height="16"/>

@@ -67,7 +67,15 @@ namespace Drive_Scan
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             DriveInfo driveInfo = value as DriveInfo;
-            long usedBytes = driveInfo.TotalSize - driveInfo.TotalFreeSpace;
+            long usedBytes;
+            try
+            {
+                usedBytes = driveInfo.TotalSize - driveInfo.TotalFreeSpace;
+            }
+            catch (System.Exception)
+            {
+                usedBytes = 0;
+            }
             return FormatSizeConverter.Convert(usedBytes);
         }
 
