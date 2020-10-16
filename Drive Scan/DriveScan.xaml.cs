@@ -216,7 +216,7 @@ namespace Drive_Scan
                         selectedFolder = FolderContentsView.SelectedItem as FolderInfo;
 
                         //Update the FolderContentsView
-                        FolderContentsView.ItemsSource = selectedFolder.children;
+                        FolderContentsView.ItemsSource = selectedFolder.children.Values;
 
                         //Refresh Pie
                         UpdateSelectedFolderPie();
@@ -335,7 +335,7 @@ namespace Drive_Scan
                         selectedFolder = selectedFolder.children[point.SeriesView.Title] as FolderInfo;
 
                         //Update the FolderContentsView
-                        FolderContentsView.ItemsSource = selectedFolder.children;
+                        FolderContentsView.ItemsSource = selectedFolder.children.Values;
 
                         //Refresh Pie
                         UpdateSelectedFolderPie();
