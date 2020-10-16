@@ -40,6 +40,7 @@ namespace Drive_Scan
         public FolderInfo selectedFolder { get; set; }
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
+        static AsyncLocal<long> _workingDriveSize = new AsyncLocal<long>();
 
         public Func<ChartPoint, string> PointLabel { get; set; }
         System.Windows.Data.Binding pointLabelBinding = new System.Windows.Data.Binding("LabelPoint");
@@ -396,8 +397,11 @@ namespace Drive_Scan
                 {
                     DriveInfo drive = DriveList.SelectedItem as DriveInfo;
                     Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
+                    
                     //Show the Bar
                     ProgBar.Visibility = Visibility.Visible;
+                    ProgBar.Value = 0;
+
                     //Scan the drive asynchronously then add the drive tree to the TreeView
                     Task scanTask = Task.Run(() => {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -412,10 +416,22 @@ namespace Drive_Scan
                             }
                         });
 
+                        //Get size of used space
+                        _workingDriveSize.Value = drive.TotalSize-drive.TotalFreeSpace;
+
                         Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
                             // Add the file to the scan
                             currentScan.files.Add(file);
                             OnFileFound(file);
+
+                            //Update the progress bar if able to
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                if (_workingTree.Value.size > 0)
+                                {
+                                    ProgBar.Value = _workingTree.Value.size/_workingDriveSize.Value;
+                                }
+                            });
                         });
 
                         //Add Drive tree to ui when finished then Release Working Resources (deallocate ram from _workingTree) when scan is finished
