@@ -461,18 +461,17 @@ namespace Drive_Scan
                 }
                 else //The size is 0 (this is the first time we have had this folder returned)
                 {
-
                     //Initialise the working tree
                     _workingTree.Value = new FolderInfo(foundFile.size,
                     //This part is also jank. it finds the last string in an array of strings that isn't null
                     foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
-
                 }
             }
             else if (!foundFile.isFolder)
             {
                 //It's a file so add it
                 _workingTree.Value.AddFileAtPath(foundFile.size, foundFile.path);
+                _workingTree.Value.size += foundFile.size;
             }
             else
             {
@@ -485,7 +484,8 @@ namespace Drive_Scan
             {
                 if (_workingTree.Value.size > 0)
                 {
-                    ProgBar.Value = _workingTree.Value.size/_workingDriveSize.Value;
+                    double newValue = ((double)_workingTree.Value.size/_workingDriveSize.Value);
+                    ProgBar.Value = newValue;
                 }
             });
         }
