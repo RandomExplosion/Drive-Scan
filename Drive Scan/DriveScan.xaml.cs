@@ -40,6 +40,7 @@ namespace Drive_Scan
         public FolderInfo selectedFolder { get; set; }
 
         static AsyncLocal<FolderInfo> _workingTree = new AsyncLocal<FolderInfo>();
+        static AsyncLocal<long> _workingDriveSize = new AsyncLocal<long>();
 
         public Func<ChartPoint, string> PointLabel { get; set; }
         System.Windows.Data.Binding pointLabelBinding = new System.Windows.Data.Binding("LabelPoint");
@@ -396,8 +397,11 @@ namespace Drive_Scan
                 {
                     DriveInfo drive = DriveList.SelectedItem as DriveInfo;
                     Console.WriteLine($"User is scanning drive: {drive.Name}{drive.VolumeLabel}");
+                    
                     //Show the Bar
                     ProgBar.Visibility = Visibility.Visible;
+                    ProgBar.Value = 0;
+
                     //Scan the drive asynchronously then add the drive tree to the TreeView
                     Task scanTask = Task.Run(() => {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -411,6 +415,9 @@ namespace Drive_Scan
                                 }
                             }
                         });
+
+                        //Get size of used space
+                        _workingDriveSize.Value = drive.TotalSize-drive.TotalFreeSpace;
 
                         Scanning.DirectoryScanner.FindFiles(drive.Name, file => {
                             // Add the file to the scan
@@ -454,24 +461,33 @@ namespace Drive_Scan
                 }
                 else //The size is 0 (this is the first time we have had this folder returned)
                 {
-
                     //Initialise the working tree
                     _workingTree.Value = new FolderInfo(foundFile.size,
                     //This part is also jank. it finds the last string in an array of strings that isn't null
                     foundFile.path.Split("\\")[foundFile.path.Split("\\").Length-2]);
-
                 }
             }
             else if (!foundFile.isFolder)
             {
                 //It's a file so add it
                 _workingTree.Value.AddFileAtPath(foundFile.size, foundFile.path);
+                _workingTree.Value.size += foundFile.size;
             }
             else
             {
                 //It's a folder so add it or update its size if it already exists
                 _workingTree.Value.UpdateFolder(foundFile.size, foundFile.path);
             }
+            
+            //Update the progress bar if able to
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (_workingTree.Value.size > 0)
+                {
+                    double newValue = ((double)_workingTree.Value.size/_workingDriveSize.Value);
+                    ProgBar.Value = newValue;
+                }
+            });
         }
 
         #region Ribbon Buttons
